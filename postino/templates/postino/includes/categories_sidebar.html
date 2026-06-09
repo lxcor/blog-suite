@@ -1,0 +1,89 @@
+{% load postino_tags %}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h6 class="mb-0">
+            <i class="bi bi-bookmark-check me-2"></i>
+            Categorias do Blog
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        {% get_categories_with_count as categories %}
+
+        {% if categories %}
+        <div class="list-group list-group-flush">
+            <a href="{% url 'postino:blog' %}"
+               class="list-group-item list-group-item-action border-0 {% if not current_category %}active bg-primary text-white{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-grid-3x3-gap{% if not current_category %}-fill{% endif %} me-2"></i>
+                        <span>Todas as Categorias</span>
+                    </div>
+                    <span class="badge {% if not current_category %}bg-light text-primary{% else %}bg-secondary{% endif %} rounded-pill">
+                        {% total_posts_count %}
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <div class="p-3 border-top">
+            <h6 class="small mb-2"><i class="bi bi-palette me-1"></i>Legenda de Cores</h6>
+            <div class="d-flex flex-wrap gap-2">
+                {% for category in categories|slice:":6" %}
+                <span class="d-flex align-items-center small">
+                    <span class="badge bg-{{ category.color }} me-1" style="width: 12px; height: 12px;"></span>
+                    <span>{{ category.name }}</span>
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% else %}
+        <div class="p-3 text-center">
+            <p class="small text-muted mb-0">Nenhuma categoria disponível no momento.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if categories %}
+    <div class="card-footer bg-transparent border-top">
+        <div class="row text-center">
+            <div class="col-6">
+                <div class="h5 mb-1">{{ categories|length }}</div>
+                <p class="small text-muted mb-0">Categorias</p>
+            </div>
+            <div class="col-6">
+                <div class="h5 mb-1">{% total_posts_count %}</div>
+                <p class="small text-muted mb-0">Artigos</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h6 class="card-title mb-3">
+            <i class="bi bi-clock-history me-2"></i>Categorias Recentes
+        </h6>
+        {% get_recent_categories 3 as recent_categories %}
+        {% if recent_categories %}
+        <div class="list-group list-group-flush">
+            {% for category in recent_categories %}
+            <a href="{% url 'postino:blog_category' category.slug %}"
+               class="list-group-item list-group-item-action border-0">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-{{ category.color }} me-3">{{ category.post_count }}</span>
+                    <div>
+                        <h6 class="mb-1">{{ category.name }}</h6>
+                        <small class="text-muted">Último artigo: {{ category.latest_post_date|timesince_ptbr }}</small>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="small text-muted mb-0">Nenhuma categoria recente.</p>
+        {% endif %}
+    </div>
+</div>

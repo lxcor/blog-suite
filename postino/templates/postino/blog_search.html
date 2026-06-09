@@ -1,0 +1,216 @@
+{% extends 'postino/base.html' %}
+
+{% load static %}
+{% load postino_tags %}
+
+{% block title %}Buscar no Boletim Informativo{% endblock %}
+
+{% block meta_description %}Busque artigos, dicas e notícias sobre publicação literária.{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="bg-gradient-search text-white py-5" style="background: linear-gradient(135deg, #0d6efd 0%, #20c997 100%);">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/" class="text-white-50">Início</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'postino:blog' %}" class="text-white-50">Boletim Informativo</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Buscar</li>
+                    </ol>
+                </nav>
+                <h1 class="display-5 fw-bold mb-3">Buscar no Boletim Informativo</h1>
+                <p class="lead mb-4">Encontre artigos, dicas e informações sobre publicação literária.</p>
+
+                <form method="get" action="{% url 'postino:blog_search' %}" class="mb-4">
+                    <div class="input-group input-group-lg shadow">
+                        <input type="text" name="q" class="form-control"
+                               placeholder="Digite palavras-chave, títulos ou autores..."
+                               value="{{ query|default:'' }}"
+                               aria-label="Buscar no Boletim Informativo" required>
+                        <button class="btn btn-light" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+
+                {% if query %}
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-primary">Busca: "{{ query }}"</span>
+                    <span class="badge bg-white text-dark">{{ total_results }} resultado{{ total_results|pluralize }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Filters -->
+<section class="bg-white border-bottom py-3">
+    <div class="container">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="small text-muted me-2">Filtrar por:</span>
+            <a href="{% url 'postino:blog' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Todos
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Search Results Column -->
+        <div class="col-lg-8">
+            {% if query %}
+                {% if total_results > 0 %}
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h3 mb-0">Resultados da Busca</h2>
+                        <span class="badge bg-primary">{{ total_results }} encontrado{{ total_results|pluralize }}</span>
+                    </div>
+
+                    <div class="search-results mb-5">
+                        {% for post in posts %}
+                        <article class="card border-0 shadow-sm mb-4" id="result-{{ forloop.counter }}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    {% if post.category %}
+                                    <a href="{% url 'postino:blog_category' post.category.slug %}"
+                                       class="badge bg-{{ post.category.color }} text-decoration-none">
+                                        {{ post.category.name }}
+                                    </a>
+                                    {% endif %}
+                                    <small class="text-muted">{{ post.published_date|date:"d/m/Y" }}</small>
+                                </div>
+
+                                <h3 class="h5 card-title mb-2">
+                                    <a href="{{ post.get_absolute_url }}" class="text-decoration-none">{{ post.title }}</a>
+                                </h3>
+
+                                <div class="card-text mb-3">
+                                    {% with excerpt=post.excerpt|truncatechars:200 %}
+                                    {% if query|lower in excerpt|lower %}
+                                        {% with parts=excerpt|split:query %}
+                                            {{ parts.0 }}<mark>{{ query }}</mark>{{ parts.1 }}
+                                        {% endwith %}
+                                    {% else %}
+                                        {{ excerpt }}
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ post.author_image_url }}"
+                                             alt="{{ post.author.get_full_name|default:post.author.username }}"
+                                             class="rounded-circle me-2"
+                                             style="width: 30px; height: 30px; object-fit: cover;">
+                                        <span class="small">{{ post.author.get_full_name|default:post.author.username }}</span>
+                                    </div>
+                                    <div class="d-flex gap-3">
+                                        <span class="small text-muted">
+                                            <i class="bi bi-clock me-1"></i>{{ post.reading_time }} min
+                                        </span>
+                                        <span class="small text-muted">
+                                            <i class="bi bi-eye me-1"></i>{{ post.views }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+
+                    {% if posts.has_other_pages %}
+                    <nav aria-label="Paginação dos resultados" class="mt-4">
+                        {% include 'postino/includes/pagination.html' with page_obj=posts per_page_options=pagination_options default_per_page=default_per_page %}
+                    </nav>
+                    <div class="text-center mt-3">
+                        <p class="small text-muted">
+                            Mostrando {{ posts.start_index }}–{{ posts.end_index }} de {{ total_results }} resultados
+                        </p>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-4"><i class="bi bi-search display-1 text-muted"></i></div>
+                        <h3 class="h4 mb-3">Nenhum resultado encontrado</h3>
+                        <p class="text-muted mb-4">
+                            Não encontramos artigos correspondentes à sua busca por "<strong>{{ query }}</strong>".
+                        </p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4"><i class="bi bi-search-heart display-1 text-primary"></i></div>
+                    <h3 class="h4 mb-3">O que você gostaria de encontrar?</h3>
+                    <p class="text-muted mb-4">
+                        Digite palavras-chave, títulos de artigos ou nomes de autores na caixa de busca acima.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 100px;">
+                <!-- Recent Articles -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Artigos Recentes</h6>
+                    </div>
+                    <div class="card-body">
+                        {% get_popular_posts 5 as recent_posts %}
+                        <div class="list-group list-group-flush">
+                            {% for recent_post in recent_posts %}
+                            <a href="{{ recent_post.get_absolute_url }}" class="list-group-item list-group-item-action border-0">
+                                <div class="d-flex align-items-center">
+                                    {% if recent_post.featured_image %}
+                                    <img src="{{ recent_post.featured_image.url }}"
+                                         alt="{{ recent_post.title }}"
+                                         class="rounded me-3"
+                                         style="width: 60px; height: 40px; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-1">{{ recent_post.title|truncatechars:50 }}</h6>
+                                        <small class="text-muted">{{ recent_post.published_date|date:"d/m/Y" }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                            {% empty %}
+                            <p class="small text-muted mb-0">Nenhum artigo recente.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">Categorias</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% get_categories_with_count as cats %}
+                            {% for category in cats %}
+                            <a href="{% url 'postino:blog_category' category.slug %}"
+                               class="badge bg-{{ category.color }} text-decoration-none">
+                                {{ category.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    mark { background-color: rgba(255, 193, 7, 0.3); padding: 0.1rem 0.2rem; border-radius: 3px; }
+    .search-results article { transition: transform 0.2s ease; border-left: 3px solid transparent; }
+    .search-results article:hover { transform: translateY(-2px); border-left-color: #0d6efd; }
+    .search-results .card-title a { color: #212529; transition: color 0.2s ease; }
+    .search-results .card-title a:hover { color: #0d6efd; text-decoration: underline; }
+</style>
+
+{% endblock %}

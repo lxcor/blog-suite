@@ -1,0 +1,4 @@
+-e ..
+-e ../dove
+django>=4.2
+Pillow>=10.0

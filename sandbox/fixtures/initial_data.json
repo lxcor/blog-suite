@@ -1,0 +1,188 @@
+[
+  {
+    "model": "postino.category",
+    "pk": 1,
+    "fields": {
+      "name": "Django",
+      "slug": "django",
+      "color": "primary",
+      "description": "Posts sobre o framework Django e seu ecossistema.",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.category",
+    "pk": 2,
+    "fields": {
+      "name": "Python",
+      "slug": "python",
+      "color": "success",
+      "description": "Dicas, padrões e tutoriais de Python.",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.category",
+    "pk": 3,
+    "fields": {
+      "name": "Open Source",
+      "slug": "open-source",
+      "color": "info",
+      "description": "Projetos, contribuições e cultura open source.",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.tag",
+    "pk": 1,
+    "fields": {
+      "name": "tutorial",
+      "slug": "tutorial",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.tag",
+    "pk": 2,
+    "fields": {
+      "name": "open-source",
+      "slug": "open-source",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.tag",
+    "pk": 3,
+    "fields": {
+      "name": "dicas",
+      "slug": "dicas",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.tag",
+    "pk": 4,
+    "fields": {
+      "name": "pacotes",
+      "slug": "pacotes",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "postino.author",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "bio": "Desenvolvedor Django apaixonado por open source e ferramentas para desenvolvedores.",
+      "avatar": "",
+      "website": "https://lxcor.com",
+      "twitter": "lxcor"
+    }
+  },
+  {
+    "model": "postino.post",
+    "pk": 1,
+    "fields": {
+      "title": "Começando com Django 5.0",
+      "slug": "comecando-com-django-5",
+      "excerpt": "Um guia completo para começar a usar o Django 5.0 nos seus projetos web.",
+      "content": "<h2>Introdução</h2><p>Django é um framework web Python de alto nível que incentiva o desenvolvimento rápido e design limpo e pragmático.</p><h2>Instalação</h2><p>Use pip para instalar: <code>pip install django</code></p><h2>Criando seu primeiro projeto</h2><p>Execute <code>django-admin startproject meu_projeto</code> e depois <code>python manage.py runserver</code> para iniciar o servidor de desenvolvimento.</p><h2>Estrutura do projeto</h2><p>O Django organiza o código em apps reutilizáveis, cada um com seus modelos, views e templates.</p>",
+      "featured_image": "",
+      "author": 1,
+      "category": 1,
+      "tags": [1, 2],
+      "is_featured": true,
+      "status": "published",
+      "views": 142,
+      "reading_time": 5,
+      "meta_title": "Começando com Django 5.0 — Guia Completo",
+      "meta_description": "Um guia completo para começar a usar o Django 5.0 nos seus projetos web.",
+      "published_date": "2024-03-15T10:00:00Z",
+      "created_at": "2024-03-14T09:00:00Z",
+      "updated_at": "2024-03-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "postino.post",
+    "pk": 2,
+    "fields": {
+      "title": "Publicando pacotes Django no PyPI",
+      "slug": "publicando-pacotes-django-pypi",
+      "excerpt": "Como empacotar um app Django reutilizável e publicá-lo no Python Package Index.",
+      "content": "<h2>Por que criar um pacote?</h2><p>Apps Django reutilizáveis permitem compartilhar funcionalidades entre projetos e com a comunidade.</p><h2>Estrutura do pacote</h2><p>Use <code>pyproject.toml</code> com setuptools para definir metadados e dependências do pacote.</p><h2>Build e publicação</h2><p>Execute <code>python -m build</code> para gerar os artefatos e <code>twine upload dist/*</code> para publicar no PyPI.</p>",
+      "featured_image": "",
+      "author": 1,
+      "category": 3,
+      "tags": [2, 3, 4],
+      "is_featured": false,
+      "status": "published",
+      "views": 87,
+      "reading_time": 8,
+      "meta_title": "Publicando pacotes Django no PyPI",
+      "meta_description": "Como empacotar um app Django reutilizável e publicá-lo no Python Package Index.",
+      "published_date": "2024-04-01T14:00:00Z",
+      "created_at": "2024-03-31T10:00:00Z",
+      "updated_at": "2024-04-01T14:00:00Z"
+    }
+  },
+  {
+    "model": "postino.post",
+    "pk": 3,
+    "fields": {
+      "title": "Rascunho: Signals no Django",
+      "slug": "signals-django",
+      "excerpt": "Como usar signals do Django para desacoplar comportamentos entre apps.",
+      "content": "<p>Conteúdo em desenvolvimento...</p>",
+      "featured_image": "",
+      "author": 1,
+      "category": 1,
+      "tags": [1, 3],
+      "is_featured": false,
+      "status": "draft",
+      "views": 0,
+      "reading_time": 6,
+      "meta_title": "",
+      "meta_description": "",
+      "published_date": null,
+      "created_at": "2024-04-10T08:00:00Z",
+      "updated_at": "2024-04-10T08:00:00Z"
+    }
+  },
+  {
+    "model": "postino.subscription",
+    "pk": 1,
+    "fields": {
+      "email": "leitor@exemplo.com",
+      "created_at": "2024-03-20T12:00:00Z"
+    }
+  },
+  {
+    "model": "postino.subscription",
+    "pk": 2,
+    "fields": {
+      "email": "outro@exemplo.com",
+      "created_at": "2024-04-05T09:00:00Z"
+    }
+  },
+  {
+    "model": "dove.campaign",
+    "pk": 1,
+    "fields": {
+      "subject": "Novidades de Março — lxcor blog",
+      "preview_text": "Confira os últimos posts sobre Django e Python.",
+      "body_html": "<h1>Olá!</h1><p>Confira os últimos posts do nosso blog:</p><ul><li><a href='#'>Começando com Django 5.0</a></li></ul>",
+      "body_text": "Olá!\n\nConfira os últimos posts:\n- Começando com Django 5.0",
+      "status": "draft",
+      "scheduled_at": null,
+      "sent_at": null,
+      "created_at": "2024-03-25T08:00:00Z",
+      "updated_at": "2024-03-25T08:00:00Z"
+    }
+  }
+]

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Django
+*.sqlite3
+media/
+staticfiles/
+
+# Sandbox
+sandbox/.venv/
+sandbox/db.sqlite3
+sandbox/media/
+sandbox/staticfiles/
+
+# Env
+.env
+.env.*

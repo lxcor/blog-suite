@@ -15,9 +15,13 @@ class BlogListView(ListView):
     context_object_name = 'posts'
     paginate_by = 6
 
+    def _active_language(self):
+        return getattr(self.request, 'LANGUAGE_CODE', 'en')
+
     def get_queryset(self):
+        lang = self._active_language()
         queryset = Post.objects.filter(
-            status='published'
+            status='published', language=lang,
         ).select_related('category', 'author').prefetch_related('tags').order_by('-published_date')
 
         category_slug = self.kwargs.get('category_slug')
@@ -39,27 +43,29 @@ class BlogListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        lang = self._active_language()
+        lang_filter = Q(posts__status='published', posts__language=lang)
 
         featured_post = Post.objects.filter(
-            status='published', is_featured=True
+            status='published', is_featured=True, language=lang,
         ).select_related('category', 'author').first()
 
         categories = Category.objects.filter(is_active=True).annotate(
-            post_count=Count('posts', filter=Q(posts__status='published'))
+            post_count=Count('posts', filter=lang_filter)
         ).filter(post_count__gt=0).order_by('name')
 
         thirty_days_ago = timezone.now() - timedelta(days=30)
 
         popular_posts = Post.objects.filter(
-            status='published', published_date__gte=thirty_days_ago
+            status='published', language=lang, published_date__gte=thirty_days_ago
         ).order_by('-views')[:5]
 
         tags = Tag.objects.annotate(
-            post_count=Count('posts', filter=Q(posts__status='published'))
+            post_count=Count('posts', filter=lang_filter)
         ).filter(post_count__gt=0).order_by('name')
 
         recent_posts = Post.objects.filter(
-            status='published'
+            status='published', language=lang,
         ).select_related('category', 'author').order_by('-published_date')[:5]
 
         context.update({
@@ -68,7 +74,7 @@ class BlogListView(ListView):
             'popular_posts': popular_posts,
             'tags': tags,
             'recent_posts': recent_posts,
-            'total_posts': Post.objects.filter(status='published').count(),
+            'total_posts': Post.objects.filter(status='published', language=lang).count(),
             'current_category': self.kwargs.get('category_slug'),
             'current_tag': self.kwargs.get('tag_slug'),
             'per_page_options': [6, 12, 24, 48],

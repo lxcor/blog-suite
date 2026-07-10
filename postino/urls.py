@@ -1,10 +1,20 @@
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 
 from . import views
+from .sitemaps import BlogStaticSitemap, CategorySitemap, PostSitemap, TagSitemap
 
 app_name = 'postino'
 
+_sitemaps = {
+    'posts': PostSitemap,
+    'categories': CategorySitemap,
+    'tags': TagSitemap,
+    'static': BlogStaticSitemap,
+}
+
 urlpatterns = [
+    path('sitemap.xml', sitemap, {'sitemaps': _sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('', views.BlogListView.as_view(), name='blog'),
     path('categoria/<slug:category_slug>/', views.BlogListView.as_view(), name='blog_category'),
     path('author/<slug:author_slug>/', views.BlogListView.as_view(), name='blog_author'),

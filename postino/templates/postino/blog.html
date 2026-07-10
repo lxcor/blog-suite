@@ -5,9 +5,9 @@
 {% load i18n %}
 
 
-{% block title %}{% trans 'Boletim Informativo' %} - {% trans 'Dicas e Notícias Editoriais' %}{% endblock %}
+{% block title %}{% trans "Newsletter" %} - {% trans "Tips and Editorial News" %}{% endblock %}
 
-{% block meta_description %}{% trans 'Dicas, tendências e insights sobre o mundo da publicação literária.' %}{% endblock %}
+{% block meta_description %}{% trans "Tips, trends, and insights about the world of publishing." %}{% endblock %}
 
 {% block content %}
 
@@ -20,16 +20,16 @@
             <div class="col-lg-7">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" class="text-white-50">Início</a></li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">Boletim Informativo</li>
+                        <li class="breadcrumb-item"><a href="/" class="text-white-50">{% trans "Home" %}</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">{% trans "Newsletter" %}</li>
                     </ol>
                 </nav>
-                <h1 class="display-5 fw-bold mb-3">Boletim Informativo</h1>
-                <p class="lead mb-4 lead">Dicas, tendências e insights sobre o mundo da publicação literária.</p>
+                <h1 class="display-5 fw-bold mb-3">{% trans "Newsletter" %}</h1>
+                <p class="lead mb-4 lead">{% trans "Tips, trends, and insights about the world of publishing." %}</p>
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-light text-primary">{{ total_posts }} Artigos</span>
-                    <span class="badge bg-white text-dark">Atualizado regularmente</span>
-                    <span class="badge bg-light text-primary">{{ categories|length }} Categorias</span>
+                    <span class="badge bg-light text-primary">{{ total_posts }} {% trans "Articles" %}</span>
+                    <span class="badge bg-white text-dark">{% trans "Regularly updated" %}</span>
+                    <span class="badge bg-light text-primary">{{ categories|length }} {% trans "Categories" %}</span>
                 </div>
             </div>
             <div class="col-lg-5">
@@ -43,7 +43,7 @@
     <div class="container">
         <div class="d-flex flex-wrap gap-2">
             <a href="{% url 'postino:blog' %}" class="btn btn-sm {% if not current_category and not current_tag %}btn-primary active{% else %}btn-outline-primary{% endif %}">
-                Todos
+                {% trans "All" %}
             </a>
             {% for category in categories %}
             <a href="{% url 'postino:blog_category' category.slug %}"
@@ -52,7 +52,7 @@
             </a>
             {% endfor %}
             <a href="#newsletter" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-envelope-plus me-1"></i>Assine
+                <i class="bi bi-envelope-plus me-1"></i>{% trans "Subscribe" %}
             </a>
         </div>
     </div>
@@ -65,7 +65,7 @@
         <div class="col-lg-8">
             <!-- Featured Post -->
             {% if featured_post %}
-            <section id="destaque" class="mb-5">
+            <section id="featured" class="mb-5">
                 <div class="card border-0 shadow-lg overflow-hidden">
                     <div class="row g-0">
                         <div class="col-md-12">
@@ -76,17 +76,18 @@
                                 <div class="d-flex align-items-center mb-3">
                                     <img src="{{ featured_post.author_image_url }}"
                                          alt="{{ featured_post.author.get_full_name|default:featured_post.author.username }}"
-                                         class="rounded-circle me-2" width="50" height="50">
+                                         class="rounded-circle me-2"
+                                         style="width:50px;height:50px;object-fit:cover;flex-shrink:0;">
                                     <div>
                                         <p class="small mb-0">
                                             <strong>{{ featured_post.author.get_full_name|default:featured_post.author.username }}</strong>
                                         </p>
                                         <p class="small text-muted mb-0">
-                                            {{ featured_post.formatted_published_date }} • {{ featured_post.reading_time }} min de leitura
+                                            {{ featured_post.formatted_published_date }} &bull; {{ featured_post.reading_time }} {% trans "min read" %}
                                         </p>
                                     </div>
                                 </div>
-                                <a href="{{ featured_post.get_absolute_url }}" class="btn btn-primary">Ler Artigo Completo</a>
+                                <a href="{{ featured_post.get_absolute_url }}" class="btn btn-primary">{% trans "Read Full Article" %}</a>
                             </div>
                         </div>
                     </div>
@@ -98,14 +99,14 @@
             <section id="posts" class="mb-5">
                 {% if current_category %}
                 <h2 class="h3 mb-4 border-bottom pb-2">
-                    Artigos em {{ current_category|title }}
+                    {% blocktrans with cat=current_category|title %}Articles in {{ cat }}{% endblocktrans %}
                 </h2>
                 {% elif current_tag %}
                 <h2 class="h3 mb-4 border-bottom pb-2">
-                    Artigos com tag "{{ current_tag }}"
+                    {% blocktrans with tag=current_tag %}Articles tagged "{{ tag }}"{% endblocktrans %}
                 </h2>
                 {% else %}
-                <h2 class="h3 mb-4 border-bottom pb-2">Artigos Recentes</h2>
+                <h2 class="h3 mb-4 border-bottom pb-2">{% trans "Recent Articles" %}</h2>
                 {% endif %}
 
                 {% for post in posts %}
@@ -125,11 +126,12 @@
                                     <div class="d-flex align-items-center">
                                         <img src="{{ post.author_image_url }}"
                                              alt="{{ post.author.get_full_name|default:post.author.username }}"
-                                             class="rounded-circle me-2" width="50" height="50">
+                                             class="rounded-circle me-2"
+                                             style="width:50px;height:50px;object-fit:cover;flex-shrink:0;">
                                         <span class="small">{{ post.author.get_full_name|default:post.author.username }}</span>
                                     </div>
                                     <a href="{{ post.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
-                                        Continuar Lendo
+                                        {% trans "Continue Reading" %}
                                     </a>
                                 </div>
                             </div>
@@ -139,18 +141,18 @@
                 {% empty %}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle me-2"></i>
-                    Nenhum artigo encontrado.{% if current_category %} Tente outra categoria.{% endif %}
+                    {% trans "No articles found." %}{% if current_category %} {% trans "Try another category." %}{% endif %}
                 </div>
                 {% endfor %}
 
                 <!-- Pagination -->
                 {% if is_paginated %}
-                <nav aria-label="Paginação do blog" class="mt-4">
+                <nav aria-label="{% trans 'Blog pagination' %}" class="mt-4">
                     {% include 'postino/includes/pagination.html' with page_obj=posts per_page_options=pagination_options default_per_page=default_per_page %}
                     <ul class="pagination justify-content-center">
                         {% if page_obj.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
                         </li>
                         {% endif %}
 
@@ -168,7 +170,7 @@
 
                         {% if page_obj.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
                         </li>
                         {% endif %}
                     </ul>
@@ -181,24 +183,24 @@
                 <div class="card border-primary">
                     <div class="card-body p-4 text-center">
                         <i class="bi bi-envelope-arrow-up display-4 text-primary mb-3"></i>
-                        <h3 class="h4 mb-3">Assine nosso Boletim Informativo</h3>
-                        <p class="mb-4">Receba as melhores dicas de publicação, notícias do mercado editorial e ofertas exclusivas diretamente no seu e-mail.</p>
+                        <h3 class="h4 mb-3">{% trans "Subscribe to our Newsletter" %}</h3>
+                        <p class="mb-4">{% trans "Get the best publishing tips, editorial news, and exclusive offers directly to your inbox." %}</p>
 
                         <form method="post" action="{% url 'postino:subscribe' %}" class="row g-3 justify-content-center">
                             {% csrf_token %}
                             <div class="col-md-8">
-                                <input type="email" name="email" class="form-control" placeholder="Seu melhor e-mail" required>
+                                <input type="email" name="email" class="form-control" placeholder="{% trans 'Your best email' %}" required>
                             </div>
                             <div class="col-md-4">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="bi bi-send-check me-2"></i>Assinar
+                                    <i class="bi bi-send-check me-2"></i>{% trans "Subscribe" %}
                                 </button>
                             </div>
                         </form>
 
                         <p class="small text-muted mt-3 mb-0">
                             <i class="bi bi-shield-check me-1"></i>
-                            Respeitamos sua privacidade. Você pode cancelar a qualquer momento.
+                            {% trans "We respect your privacy. You can unsubscribe at any time." %}
                         </p>
                     </div>
                 </div>
@@ -211,10 +213,10 @@
                 <!-- Search -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Buscar no Boletim Informativo</h5>
+                        <h5 class="card-title mb-3">{% trans "Search the Blog" %}</h5>
                         <form method="get" action="{% url 'postino:blog_search' %}">
                             <div class="input-group">
-                                <input type="text" name="q" class="form-control" placeholder="Digite sua busca..." value="{{ query|default:'' }}">
+                                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search...' %}" value="{{ query|default:'' }}">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
@@ -226,7 +228,7 @@
                 <!-- Categories -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Categorias</h5>
+                        <h5 class="card-title mb-3">{% trans "Categories" %}</h5>
                         <div class="list-group list-group-flush">
                             {% for category in categories %}
                             <a href="{% url 'postino:blog_category' category.slug %}"
@@ -244,19 +246,19 @@
                 <!-- Popular Posts -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Artigos Populares</h5>
+                        <h5 class="card-title mb-3">{% trans "Popular Posts" %}</h5>
                         <div class="list-group list-group-flush">
                             {% get_popular_posts 5 as popular_posts %}
                             {% for post in popular_posts %}
                             <a href="{{ post.get_absolute_url }}" class="list-group-item list-group-item-action border-0">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h6 class="mb-1">{{ post.title|truncatechars:40 }}</h6>
-                                    <small class="text-muted">{{ post.views }} 👁️</small>
+                                    <small class="text-muted">{{ post.views }} &#128065;</small>
                                 </div>
                                 <p class="small text-muted mb-1">{{ post.excerpt|truncatechars:60 }}</p>
                             </a>
                             {% empty %}
-                            <p class="small text-muted mb-0">Nenhum artigo popular no momento.</p>
+                            <p class="small text-muted mb-0">{% trans "No popular posts at the moment." %}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -265,7 +267,7 @@
                 <!-- Tags Cloud -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Tags</h5>
+                        <h5 class="card-title mb-3">{% trans "Tags" %}</h5>
                         <div class="d-flex flex-wrap gap-2">
                             {% get_tag_cloud as tag_cloud %}
                         </div>
@@ -291,7 +293,7 @@
     article.card:hover { border-left-color: #0d6efd; }
     @media (max-width: 768px) {
         .card .row { flex-direction: column; }
-        .card img { height: 200px !important; }
+        .card img:not(.rounded-circle) { height: 200px !important; }
     }
 </style>
 

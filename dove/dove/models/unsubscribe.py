@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Unsubscribe(models.Model):
@@ -9,8 +10,8 @@ class Unsubscribe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Descadastro"
-        verbose_name_plural = "Descadastros"
+        verbose_name = _("Unsubscription")
+        verbose_name_plural = _("Unsubscriptions")
         ordering = ['-created_at']
 
     def __str__(self):

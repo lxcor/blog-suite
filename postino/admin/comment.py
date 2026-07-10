@@ -15,5 +15,5 @@ class CommentAdmin(admin.ModelAdmin):
 
     def approve_comments(self, request, queryset):
         queryset.update(is_approved=True)
-        self.message_user(request, f"{queryset.count()} comentários aprovados.")
-    approve_comments.short_description = "Aprovar comentários selecionados"
+        self.message_user(request, f"{queryset.count()} comments approved.")
+    approve_comments.short_description = "Approve selected comments"

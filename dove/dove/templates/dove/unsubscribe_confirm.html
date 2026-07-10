@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancelar inscrição</title>
+    <title>{% trans "Unsubscribe" %}</title>
     <style>
         body { font-family: sans-serif; max-width: 480px; margin: 80px auto; padding: 0 20px; color: #333; }
         h1 { font-size: 1.4rem; }
@@ -16,13 +17,13 @@
     </style>
 </head>
 <body>
-    <h1>Cancelar inscrição</h1>
-    <p>Tem certeza que deseja cancelar a inscrição de <span class="email">{{ email }}</span>?</p>
-    <p>Você não receberá mais newsletters desta lista.</p>
+    <h1>{% trans "Unsubscribe" %}</h1>
+    <p>{% blocktrans with email=email %}Are you sure you want to unsubscribe <span class="email">{{ email }}</span>?{% endblocktrans %}</p>
+    <p>{% trans "You will no longer receive newsletters from this list." %}</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn">Confirmar cancelamento</button>
-        <a href="/" class="cancel">Voltar</a>
+        <button type="submit" class="btn">{% trans "Confirm unsubscription" %}</button>
+        <a href="/" class="cancel">{% trans "Back" %}</a>
     </form>
 </body>
 </html>

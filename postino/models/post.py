@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
 from .category import Category
 from .tag import Tag
@@ -10,21 +11,21 @@ from .tag import Tag
 
 class Post(models.Model):
     POST_STATUS = (
-        ('draft', 'Rascunho'),
-        ('published', 'Publicado'),
-        ('archived', 'Arquivado'),
+        ('draft', _('Draft')),
+        ('published', _('Published')),
+        ('archived', _('Archived')),
     )
 
-    title = models.CharField(max_length=200, verbose_name="Título")
-    slug = models.SlugField(max_length=200, unique=True, verbose_name="Slug")
-    excerpt = models.TextField(max_length=300, verbose_name="Resumo")
-    content = models.TextField(verbose_name="Conteúdo")
+    title = models.CharField(max_length=200, verbose_name=_("Title"))
+    slug = models.SlugField(max_length=200, unique=True, verbose_name=_("Slug"))
+    excerpt = models.TextField(max_length=300, verbose_name=_("Summary"))
+    content = models.TextField(verbose_name=_("Content"))
 
     featured_image = models.ImageField(
         upload_to='blog/featured/%Y/%m/%d/',
         blank=True,
         null=True,
-        verbose_name="Imagem Destacada"
+        verbose_name=_("Featured Image")
     )
 
     author = models.ForeignKey(
@@ -32,7 +33,7 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='postino_posts',
-        verbose_name="Autor"
+        verbose_name=_("Author")
     )
 
     category = models.ForeignKey(
@@ -40,40 +41,55 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='posts',
-        verbose_name="Categoria"
+        verbose_name=_("Category")
     )
 
     tags = models.ManyToManyField(
         Tag,
         blank=True,
         related_name='posts',
-        verbose_name="Tags"
+        verbose_name=_("Tags")
     )
 
-    is_featured = models.BooleanField(default=False, verbose_name="Destacado")
+    is_featured = models.BooleanField(default=False, verbose_name=_("Featured"))
     status = models.CharField(
         max_length=20,
         choices=POST_STATUS,
         default='draft',
-        verbose_name="Status"
+        verbose_name=_("Status")
     )
 
-    views = models.PositiveIntegerField(default=0, verbose_name="Visualizações")
+    views = models.PositiveIntegerField(default=0, verbose_name=_("Views"))
     reading_time = models.PositiveIntegerField(
         default=5,
-        verbose_name="Tempo de Leitura (minutos)"
+        verbose_name=_("Reading Time (minutes)")
     )
 
-    meta_title = models.CharField(max_length=200, blank=True, verbose_name="Meta Título")
-    meta_description = models.TextField(max_length=300, blank=True, verbose_name="Meta Descrição")
+    meta_title = models.CharField(max_length=200, blank=True, verbose_name=_("Meta Title"))
+    meta_description = models.TextField(max_length=300, blank=True, verbose_name=_("Meta Description"))
 
-    published_date = models.DateTimeField(null=True, blank=True, verbose_name="Data de Publicação")
+    language = models.CharField(
+        max_length=10,
+        default='en',
+        verbose_name=_("Language"),
+        help_text=_("BCP 47 language code of this post's content, e.g. en, pt-br, fr"),
+    )
+    translated_from = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='translations',
+        verbose_name=_("Translated from"),
+    )
+
+    published_date = models.DateTimeField(null=True, blank=True, verbose_name=_("Publication Date"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Post do Blog"
-        verbose_name_plural = "Posts do Blog"
+        verbose_name = _("Blog Post")
+        verbose_name_plural = _("Blog Posts")
         ordering = ['-published_date', '-created_at']
         indexes = [
             models.Index(fields=['status', 'published_date']),

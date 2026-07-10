@@ -25,15 +25,15 @@ class CampaignAdmin(admin.ModelAdmin):
 
     def sent_count(self, obj):
         return obj.sends.filter(status='sent').count()
-    sent_count.short_description = 'Enviados'
+    sent_count.short_description = 'Sent'
 
     def failed_count(self, obj):
         return obj.sends.filter(status='failed').count()
-    failed_count.short_description = 'Falhas'
+    failed_count.short_description = 'Failed'
 
     def action_send_campaign(self, request, queryset):
         eligible = queryset.filter(status__in=['draft', 'scheduled'])
         for campaign in eligible:
             dispatch_campaign(campaign.pk)
-        self.message_user(request, f'{eligible.count()} campanha(s) enviada(s).')
-    action_send_campaign.short_description = 'Enviar campanhas selecionadas'
+        self.message_user(request, f'{eligible.count()} campaign(s) sent.')
+    action_send_campaign.short_description = 'Send selected campaigns'

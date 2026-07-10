@@ -4,6 +4,7 @@ from django import template
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Max, Q
 from django.utils import timezone
+from django.utils.translation import ngettext
 
 from postino.models import Category, Comment, Post, Tag
 
@@ -124,7 +125,7 @@ def _tag_size_class(count):
 # --- FILTERS ---
 
 @register.filter
-def timesince_ptbr(value):
+def timesince_human(value):
     if not value:
         return ""
     now = timezone.now()
@@ -132,26 +133,32 @@ def timesince_ptbr(value):
 
     if diff.days == 0:
         if diff.seconds < 60:
-            return "agora mesmo"
+            return ngettext("just now", "just now", 1)
         elif diff.seconds < 3600:
             m = diff.seconds // 60
-            return f"{m} minuto{'s' if m > 1 else ''} atrás"
+            return ngettext("%(m)d minute ago", "%(m)d minutes ago", m) % {'m': m}
         else:
             h = diff.seconds // 3600
-            return f"{h} hora{'s' if h > 1 else ''} atrás"
+            return ngettext("%(h)d hour ago", "%(h)d hours ago", h) % {'h': h}
     elif diff.days == 1:
-        return "ontem"
+        return ngettext("yesterday", "yesterday", 1)
     elif diff.days < 7:
-        return f"{diff.days} dia{'s' if diff.days > 1 else ''} atrás"
+        d = diff.days
+        return ngettext("%(d)d day ago", "%(d)d days ago", d) % {'d': d}
     elif diff.days < 30:
         w = diff.days // 7
-        return f"{w} semana{'s' if w > 1 else ''} atrás"
+        return ngettext("%(w)d week ago", "%(w)d weeks ago", w) % {'w': w}
     elif diff.days < 365:
         mo = diff.days // 30
-        return f"{mo} mês{'es' if mo > 1 else ''} atrás"
+        return ngettext("%(mo)d month ago", "%(mo)d months ago", mo) % {'mo': mo}
     else:
         y = diff.days // 365
-        return f"{y} ano{'s' if y > 1 else ''} atrás"
+        return ngettext("%(y)d year ago", "%(y)d years ago", y) % {'y': y}
+
+
+@register.filter
+def timesince_ptbr(value):
+    return timesince_human(value)
 
 
 @register.filter

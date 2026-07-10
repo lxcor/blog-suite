@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Author(models.Model):
@@ -14,8 +15,8 @@ class Author(models.Model):
     twitter = models.CharField(max_length=100, blank=True)
 
     class Meta:
-        verbose_name = "Perfil de Autor do Blog"
-        verbose_name_plural = "Perfis de Autores do Blog"
+        verbose_name = _("Blog Author Profile")
+        verbose_name_plural = _("Blog Author Profiles")
 
     def __str__(self):
         return f"Blog author: {self.user}"

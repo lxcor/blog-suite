@@ -10,22 +10,22 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'author_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Seu nome'
+                'placeholder': 'Your name'
             }),
             'author_email': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Seu e-mail'
+                'placeholder': 'Your email'
             }),
             'content': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Seu comentário...',
+                'placeholder': 'Your comment...',
                 'rows': 4
             }),
         }
         labels = {
-            'author_name': 'Nome',
-            'author_email': 'E-mail',
-            'content': 'Comentário'
+            'author_name': 'Name',
+            'author_email': 'Email',
+            'content': 'Comment'
         }
 
 
@@ -33,10 +33,10 @@ class SubscribeForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Seu melhor e-mail',
+            'placeholder': 'Your best email',
             'required': True
         }),
-        label='E-mail'
+        label='Email'
     )
 
     def clean_email(self):

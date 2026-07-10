@@ -2,10 +2,11 @@
 
 {% load static %}
 {% load postino_tags %}
+{% load i18n %}
 
-{% block title %}Buscar no Boletim Informativo{% endblock %}
+{% block title %}{% trans "Search the Blog" %}{% endblock %}
 
-{% block meta_description %}Busque artigos, dicas e notícias sobre publicação literária.{% endblock %}
+{% block meta_description %}{% trans "Search articles, tips, and news about publishing." %}{% endblock %}
 
 {% block content %}
 
@@ -16,28 +17,30 @@
             <div class="col-lg-8">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/" class="text-white-50">Início</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'postino:blog' %}" class="text-white-50">Boletim Informativo</a></li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">Buscar</li>
+                        <li class="breadcrumb-item"><a href="/" class="text-white-50">{% trans "Home" %}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'postino:blog' %}" class="text-white-50">{% trans "Blog" %}</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">{% trans "Search" %}</li>
                     </ol>
                 </nav>
-                <h1 class="display-5 fw-bold mb-3">Buscar no Boletim Informativo</h1>
-                <p class="lead mb-4">Encontre artigos, dicas e informações sobre publicação literária.</p>
+                <h1 class="display-5 fw-bold mb-3">{% trans "Search the Blog" %}</h1>
+                <p class="lead mb-4">{% trans "Find articles, tips, and information about publishing." %}</p>
 
                 <form method="get" action="{% url 'postino:blog_search' %}" class="mb-4">
                     <div class="input-group input-group-lg shadow">
                         <input type="text" name="q" class="form-control"
-                               placeholder="Digite palavras-chave, títulos ou autores..."
+                               placeholder="{% trans 'Search by keyword, title, or author...' %}"
                                value="{{ query|default:'' }}"
-                               aria-label="Buscar no Boletim Informativo" required>
+                               aria-label="{% trans 'Search the Blog' %}" required>
                         <button class="btn btn-light" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
 
                 {% if query %}
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-light text-primary">Busca: "{{ query }}"</span>
-                    <span class="badge bg-white text-dark">{{ total_results }} resultado{{ total_results|pluralize }}</span>
+                    <span class="badge bg-light text-primary">{% trans "Search:" %} &ldquo;{{ query }}&rdquo;</span>
+                    <span class="badge bg-white text-dark">
+                        {% blocktrans count count=total_results %}{{ count }} result{% plural %}{{ count }} results{% endblocktrans %}
+                    </span>
                 </div>
                 {% endif %}
             </div>
@@ -49,9 +52,9 @@
 <section class="bg-white border-bottom py-3">
     <div class="container">
         <div class="d-flex flex-wrap gap-2 align-items-center">
-            <span class="small text-muted me-2">Filtrar por:</span>
+            <span class="small text-muted me-2">{% trans "Filter by:" %}</span>
             <a href="{% url 'postino:blog' %}" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-arrow-counterclockwise me-1"></i>Todos
+                <i class="bi bi-arrow-counterclockwise me-1"></i>{% trans "All" %}
             </a>
         </div>
     </div>
@@ -65,8 +68,10 @@
             {% if query %}
                 {% if total_results > 0 %}
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="h3 mb-0">Resultados da Busca</h2>
-                        <span class="badge bg-primary">{{ total_results }} encontrado{{ total_results|pluralize }}</span>
+                        <h2 class="h3 mb-0">{% trans "Search Results" %}</h2>
+                        <span class="badge bg-primary">
+                            {% blocktrans count count=total_results %}{{ count }} found{% plural %}{{ count }} found{% endblocktrans %}
+                        </span>
                     </div>
 
                     <div class="search-results mb-5">
@@ -80,7 +85,7 @@
                                         {{ post.category.name }}
                                     </a>
                                     {% endif %}
-                                    <small class="text-muted">{{ post.published_date|date:"d/m/Y" }}</small>
+                                    <small class="text-muted">{{ post.published_date|date:"N j, Y" }}</small>
                                 </div>
 
                                 <h3 class="h5 card-title mb-2">
@@ -109,7 +114,7 @@
                                     </div>
                                     <div class="d-flex gap-3">
                                         <span class="small text-muted">
-                                            <i class="bi bi-clock me-1"></i>{{ post.reading_time }} min
+                                            <i class="bi bi-clock me-1"></i>{{ post.reading_time }} {% trans "min" %}
                                         </span>
                                         <span class="small text-muted">
                                             <i class="bi bi-eye me-1"></i>{{ post.views }}
@@ -122,31 +127,26 @@
                     </div>
 
                     {% if posts.has_other_pages %}
-                    <nav aria-label="Paginação dos resultados" class="mt-4">
+                    <nav aria-label="{% trans 'Search results pagination' %}" class="mt-4">
                         {% include 'postino/includes/pagination.html' with page_obj=posts per_page_options=pagination_options default_per_page=default_per_page %}
                     </nav>
-                    <div class="text-center mt-3">
-                        <p class="small text-muted">
-                            Mostrando {{ posts.start_index }}–{{ posts.end_index }} de {{ total_results }} resultados
-                        </p>
-                    </div>
                     {% endif %}
 
                 {% else %}
                     <div class="text-center py-5">
                         <div class="mb-4"><i class="bi bi-search display-1 text-muted"></i></div>
-                        <h3 class="h4 mb-3">Nenhum resultado encontrado</h3>
+                        <h3 class="h4 mb-3">{% trans "No results found" %}</h3>
                         <p class="text-muted mb-4">
-                            Não encontramos artigos correspondentes à sua busca por "<strong>{{ query }}</strong>".
+                            {% blocktrans with q=query %}No articles matched your search for &ldquo;<strong>{{ q }}</strong>&rdquo;.{% endblocktrans %}
                         </p>
                     </div>
                 {% endif %}
             {% else %}
                 <div class="text-center py-5">
                     <div class="mb-4"><i class="bi bi-search-heart display-1 text-primary"></i></div>
-                    <h3 class="h4 mb-3">O que você gostaria de encontrar?</h3>
+                    <h3 class="h4 mb-3">{% trans "What are you looking for?" %}</h3>
                     <p class="text-muted mb-4">
-                        Digite palavras-chave, títulos de artigos ou nomes de autores na caixa de busca acima.
+                        {% trans "Search by keywords, article titles, or author names in the search box above." %}
                     </p>
                 </div>
             {% endif %}
@@ -158,7 +158,7 @@
                 <!-- Recent Articles -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-light">
-                        <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Artigos Recentes</h6>
+                        <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>{% trans "Recent Articles" %}</h6>
                     </div>
                     <div class="card-body">
                         {% get_popular_posts 5 as recent_posts %}
@@ -174,12 +174,12 @@
                                     {% endif %}
                                     <div>
                                         <h6 class="mb-1">{{ recent_post.title|truncatechars:50 }}</h6>
-                                        <small class="text-muted">{{ recent_post.published_date|date:"d/m/Y" }}</small>
+                                        <small class="text-muted">{{ recent_post.published_date|date:"N j, Y" }}</small>
                                     </div>
                                 </div>
                             </a>
                             {% empty %}
-                            <p class="small text-muted mb-0">Nenhum artigo recente.</p>
+                            <p class="small text-muted mb-0">{% trans "No recent articles." %}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -188,7 +188,7 @@
                 <!-- Categories -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
-                        <h6 class="card-title mb-3">Categorias</h6>
+                        <h6 class="card-title mb-3">{% trans "Categories" %}</h6>
                         <div class="d-flex flex-wrap gap-2">
                             {% get_categories_with_count as cats %}
                             {% for category in cats %}

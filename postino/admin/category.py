@@ -12,4 +12,4 @@ class CategoryAdmin(admin.ModelAdmin):
 
     def post_count(self, obj):
         return obj.posts.count()
-    post_count.short_description = 'Número de Posts'
+    post_count.short_description = 'Post Count'

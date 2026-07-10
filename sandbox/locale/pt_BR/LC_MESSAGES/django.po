@@ -1,0 +1,522 @@
+# Portuguese (Brazil) translation for blog-suite
+# Copyright (C) 2026 lxcor-postino / lxcor-dove
+msgid ""
+msgstr ""
+"Project-Id-Version: blog-suite 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-07-10 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Portuguese (Brazil)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ---------------------------------------------------------------------------
+# General / shared
+# ---------------------------------------------------------------------------
+
+msgid "Home"
+msgstr "Início"
+
+msgid "Back"
+msgstr "Voltar"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Filter by:"
+msgstr "Filtrar por:"
+
+msgid "Tags:"
+msgstr "Tags:"
+
+msgid "Tags"
+msgstr "Tags"
+
+msgid "Categories"
+msgstr "Categorias"
+
+msgid "Articles"
+msgstr "Artigos"
+
+msgid "min"
+msgstr "min"
+
+msgid "min read"
+msgstr "min de leitura"
+
+msgid "views"
+msgstr "visualizações"
+
+msgid "Subscribe"
+msgstr "Assinar"
+
+# ---------------------------------------------------------------------------
+# Blog list page
+# ---------------------------------------------------------------------------
+
+msgid "Newsletter"
+msgstr "Boletim Informativo"
+
+msgid "Tips and Editorial News"
+msgstr "Dicas e Notícias Editoriais"
+
+msgid "Tips, trends, and insights about the world of publishing."
+msgstr "Dicas, tendências e insights sobre o mundo da publicação literária."
+
+msgid "Regularly updated"
+msgstr "Atualizado regularmente"
+
+msgid "Read Full Article"
+msgstr "Ler Artigo Completo"
+
+msgid "Recent Articles"
+msgstr "Artigos Recentes"
+
+msgid "Continue Reading"
+msgstr "Continuar Lendo"
+
+msgid "No articles found."
+msgstr "Nenhum artigo encontrado."
+
+msgid "Try another category."
+msgstr "Tente outra categoria."
+
+msgid "Blog pagination"
+msgstr "Paginação do blog"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Próxima"
+
+msgid "Subscribe to our Newsletter"
+msgstr "Assine nosso Boletim Informativo"
+
+msgid "Get the best publishing tips, editorial news, and exclusive offers directly to your inbox."
+msgstr "Receba as melhores dicas de publicação, notícias do mercado editorial e ofertas exclusivas diretamente no seu e-mail."
+
+msgid "Your best email"
+msgstr "Seu melhor e-mail"
+
+msgid "We respect your privacy. You can unsubscribe at any time."
+msgstr "Respeitamos sua privacidade. Você pode cancelar a qualquer momento."
+
+msgid "Search the Blog"
+msgstr "Buscar no Boletim Informativo"
+
+msgid "Search..."
+msgstr "Buscar..."
+
+msgid "Popular Posts"
+msgstr "Artigos Populares"
+
+msgid "No popular posts at the moment."
+msgstr "Nenhum artigo popular no momento."
+
+# blocktrans: Articles in {{ cat }}
+msgid "Articles in %(cat)s"
+msgstr "Artigos em %(cat)s"
+
+# blocktrans: Articles tagged "{{ tag }}"
+msgid "Articles tagged \"%(tag)s\""
+msgstr "Artigos com tag \"%(tag)s\""
+
+# ---------------------------------------------------------------------------
+# Blog post detail page
+# ---------------------------------------------------------------------------
+
+msgid "Blog"
+msgstr "Boletim Informativo"
+
+msgid "Editorial Staff"
+msgstr "Equipe Editorial"
+
+msgid "Contributor"
+msgstr "Colaborador"
+
+msgid "Share this article:"
+msgstr "Compartilhe este artigo:"
+
+msgid "Copy Link"
+msgstr "Copiar Link"
+
+msgid "About the Author"
+msgstr "Sobre o Autor"
+
+msgid "View all articles by this author"
+msgstr "Ver todos os artigos deste autor"
+
+msgid "View all articles"
+msgstr "Ver todos os artigos"
+
+msgid "Comments"
+msgstr "Comentários"
+
+msgid "Awaiting moderation"
+msgstr "Aguardando moderação"
+
+msgid "Be the first to comment on this article!"
+msgstr "Seja o primeiro a comentar este artigo!"
+
+msgid "Leave a Comment"
+msgstr "Deixe seu comentário"
+
+msgid "Your name"
+msgstr "Seu nome"
+
+msgid "Your email"
+msgstr "Seu e-mail"
+
+msgid "Your comment"
+msgstr "Seu comentário"
+
+msgid "Your comment will be moderated before appearing publicly."
+msgstr "Seu comentário será moderado antes de aparecer publicamente."
+
+msgid "Submit Comment"
+msgstr "Enviar Comentário"
+
+msgid "Related Articles"
+msgstr "Artigos Relacionados"
+
+msgid "Read article"
+msgstr "Ler artigo"
+
+msgid "Article navigation"
+msgstr "Navegação entre artigos"
+
+msgid "Previous article"
+msgstr "Artigo anterior"
+
+msgid "Next article"
+msgstr "Próximo artigo"
+
+msgid "In this article"
+msgstr "Neste artigo"
+
+msgid "Get the best publishing tips in your email."
+msgstr "Receba as melhores dicas de publicação em seu e-mail."
+
+msgid "No spam. Cancel anytime."
+msgstr "Sem spam. Cancele quando quiser."
+
+msgid "Back to Blog"
+msgstr "Voltar para o Boletim Informativo"
+
+# blocktrans: {{ name }} is a member of the editorial staff and writes about {{ cat }}.
+msgid "%(name)s is a member of the editorial staff and writes about %(cat)s."
+msgstr "%(name)s é membro da equipe editorial e escreve sobre %(cat)s."
+
+# blocktrans: {{ name }} is a contributor who writes about {{ cat }}.
+msgid "%(name)s is a contributor who writes about %(cat)s."
+msgstr "%(name)s é colaborador e escreve sobre %(cat)s."
+
+# ---------------------------------------------------------------------------
+# Blog search page
+# ---------------------------------------------------------------------------
+
+msgid "Search articles, tips, and news about publishing."
+msgstr "Busque artigos, dicas e notícias sobre publicação literária."
+
+msgid "Find articles, tips, and information about publishing."
+msgstr "Encontre artigos, dicas e informações sobre publicação literária."
+
+msgid "Search by keyword, title, or author..."
+msgstr "Digite palavras-chave, títulos ou autores..."
+
+msgid "Search:"
+msgstr "Busca:"
+
+msgid "Search Results"
+msgstr "Resultados da Busca"
+
+msgid "Search results pagination"
+msgstr "Paginação dos resultados"
+
+msgid "No results found"
+msgstr "Nenhum resultado encontrado"
+
+msgid "What are you looking for?"
+msgstr "O que você gostaria de encontrar?"
+
+msgid "Search by keywords, article titles, or author names in the search box above."
+msgstr "Digite palavras-chave, títulos de artigos ou nomes de autores na caixa de busca acima."
+
+msgid "No recent articles."
+msgstr "Nenhum artigo recente."
+
+# blocktrans count: %(count)s result / %(count)s results
+msgid "%(count)s result"
+msgid_plural "%(count)s results"
+msgstr[0] "%(count)s resultado"
+msgstr[1] "%(count)s resultados"
+
+# blocktrans count: %(count)s found
+msgid "%(count)s found"
+msgid_plural "%(count)s found"
+msgstr[0] "%(count)s encontrado"
+msgstr[1] "%(count)s encontrados"
+
+# blocktrans: No articles matched your search for "{{ q }}".
+msgid "No articles matched your search for &ldquo;<strong>%(q)s</strong>&rdquo;."
+msgstr "Não encontramos artigos correspondentes à sua busca por &ldquo;<strong>%(q)s</strong>&rdquo;."
+
+# ---------------------------------------------------------------------------
+# Pagination include
+# ---------------------------------------------------------------------------
+
+msgid "Pagination"
+msgstr "Paginação"
+
+msgid "First page"
+msgstr "Primeira página"
+
+msgid "Previous page"
+msgstr "Página anterior"
+
+msgid "Next page"
+msgstr "Próxima página"
+
+msgid "Last page"
+msgstr "Última página"
+
+# blocktrans count: Showing X–Y of Z result(s)
+msgid "Showing %(start)s–%(end)s of %(total)s result"
+msgid_plural "Showing %(start)s–%(end)s of %(total)s results"
+msgstr[0] "Mostrando %(start)s–%(end)s de %(total)s resultado"
+msgstr[1] "Mostrando %(start)s–%(end)s de %(total)s resultados"
+
+# ---------------------------------------------------------------------------
+# Categories sidebar include
+# ---------------------------------------------------------------------------
+
+msgid "Blog Categories"
+msgstr "Categorias do Blog"
+
+msgid "All Categories"
+msgstr "Todas as Categorias"
+
+msgid "Color Legend"
+msgstr "Legenda de Cores"
+
+msgid "No categories available at the moment."
+msgstr "Nenhuma categoria disponível no momento."
+
+msgid "Recent Categories"
+msgstr "Categorias Recentes"
+
+msgid "Latest article:"
+msgstr "Último artigo:"
+
+msgid "No recent categories."
+msgstr "Nenhuma categoria recente."
+
+# ---------------------------------------------------------------------------
+# Dove — unsubscribe template
+# ---------------------------------------------------------------------------
+
+msgid "Unsubscribe"
+msgstr "Cancelar inscrição"
+
+msgid "You will no longer receive newsletters from this list."
+msgstr "Você não receberá mais newsletters desta lista."
+
+msgid "Confirm unsubscription"
+msgstr "Confirmar cancelamento"
+
+# blocktrans: Are you sure you want to unsubscribe {{ email }}?
+msgid "Are you sure you want to unsubscribe <span class=\"email\">%(email)s</span>?"
+msgstr "Tem certeza que deseja cancelar a inscrição de <span class=\"email\">%(email)s</span>?"
+
+# ---------------------------------------------------------------------------
+# timesince_human filter (Python ngettext strings)
+# ---------------------------------------------------------------------------
+
+msgid "just now"
+msgstr "agora mesmo"
+
+msgid "%(m)d minute ago"
+msgid_plural "%(m)d minutes ago"
+msgstr[0] "%(m)d minuto atrás"
+msgstr[1] "%(m)d minutos atrás"
+
+msgid "%(h)d hour ago"
+msgid_plural "%(h)d hours ago"
+msgstr[0] "%(h)d hora atrás"
+msgstr[1] "%(h)d horas atrás"
+
+msgid "yesterday"
+msgstr "ontem"
+
+msgid "%(d)d day ago"
+msgid_plural "%(d)d days ago"
+msgstr[0] "%(d)d dia atrás"
+msgstr[1] "%(d)d dias atrás"
+
+msgid "%(w)d week ago"
+msgid_plural "%(w)d weeks ago"
+msgstr[0] "%(w)d semana atrás"
+msgstr[1] "%(w)d semanas atrás"
+
+msgid "%(mo)d month ago"
+msgid_plural "%(mo)d months ago"
+msgstr[0] "%(mo)d mês atrás"
+msgstr[1] "%(mo)d meses atrás"
+
+msgid "%(y)d year ago"
+msgid_plural "%(y)d years ago"
+msgstr[0] "%(y)d ano atrás"
+msgstr[1] "%(y)d anos atrás"
+
+# ---------------------------------------------------------------------------
+# Model verbose names — postino
+# ---------------------------------------------------------------------------
+
+msgid "Blog Author Profile"
+msgstr "Perfil de Autor do Blog"
+
+msgid "Blog Author Profiles"
+msgstr "Perfis de Autores do Blog"
+
+msgid "Category Name"
+msgstr "Nome da Categoria"
+
+msgid "Badge Color"
+msgstr "Cor do Badge"
+
+msgid "Bootstrap color (primary, secondary, success, danger, warning, info)"
+msgstr "Cor Bootstrap (primary, secondary, success, danger, warning, info)"
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "Active"
+msgstr "Ativa"
+
+msgid "Blog Category"
+msgstr "Categoria do Blog"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Summary"
+msgstr "Resumo"
+
+msgid "Content"
+msgstr "Conteúdo"
+
+msgid "Featured Image"
+msgstr "Imagem Destacada"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Featured"
+msgstr "Destacado"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Views"
+msgstr "Visualizações"
+
+msgid "Reading Time (minutes)"
+msgstr "Tempo de Leitura (minutos)"
+
+msgid "Meta Title"
+msgstr "Meta Título"
+
+msgid "Meta Description"
+msgstr "Meta Descrição"
+
+msgid "Publication Date"
+msgstr "Data de Publicação"
+
+msgid "Blog Post"
+msgstr "Post do Blog"
+
+msgid "Blog Posts"
+msgstr "Posts do Blog"
+
+msgid "Draft"
+msgstr "Rascunho"
+
+msgid "Published"
+msgstr "Publicado"
+
+msgid "Archived"
+msgstr "Arquivado"
+
+msgid "Tag Name"
+msgstr "Nome da Tag"
+
+msgid "Blog Tag"
+msgstr "Tag do Blog"
+
+msgid "Blog Tags"
+msgstr "Tags do Blog"
+
+# ---------------------------------------------------------------------------
+# Model verbose names — dove
+# ---------------------------------------------------------------------------
+
+msgid "Subject"
+msgstr "Assunto"
+
+msgid "Preview Text"
+msgstr "Texto de Preview"
+
+msgid "HTML Body"
+msgstr "Corpo HTML"
+
+msgid "Plain Text Body"
+msgstr "Corpo Texto Simples"
+
+msgid "Scheduled for"
+msgstr "Agendado para"
+
+msgid "Sent at"
+msgstr "Enviado em"
+
+msgid "Campaign"
+msgstr "Campanha"
+
+msgid "Campaigns"
+msgstr "Campanhas"
+
+msgid "Queued"
+msgstr "Na Fila"
+
+msgid "Sent"
+msgstr "Enviado"
+
+msgid "Failed"
+msgstr "Falhou"
+
+msgid "Scheduled"
+msgstr "Agendado"
+
+msgid "Sending"
+msgstr "Enviando"
+
+msgid "Campaign Send"
+msgstr "Envio"
+
+msgid "Campaign Sends"
+msgstr "Envios"
+
+msgid "Unsubscription"
+msgstr "Descadastro"
+
+msgid "Unsubscriptions"
+msgstr "Descadastros"

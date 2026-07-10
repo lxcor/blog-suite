@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic import DetailView
 
 from ..forms import CommentForm
-from ..models import Post
+from ..models import Language, Post
 
 
 class BlogPostDetailView(DetailView):
@@ -40,9 +40,40 @@ class BlogPostDetailView(DetailView):
             'related_posts': related_posts,
             'next_post': next_post,
             'prev_post': prev_post,
+            'language_versions': self._get_language_versions(self.object),
         })
 
         return context
+
+    def _get_language_versions(self, post):
+        """Return all published versions of this article across languages."""
+        origin = post.translated_from if post.translated_from_id else post
+
+        all_versions = []
+        if origin.status == 'published':
+            all_versions.append(origin)
+        all_versions.extend(
+            origin.translations.filter(status='published').select_related()
+        )
+
+        if len(all_versions) <= 1:
+            return []
+
+        lang_map = {
+            lang.code: lang.name
+            for lang in Language.objects.filter(
+                code__in=[v.language for v in all_versions]
+            )
+        }
+
+        return [
+            {
+                'post': v,
+                'language_name': lang_map.get(v.language, v.language),
+                'is_current': v.pk == post.pk,
+            }
+            for v in all_versions
+        ]
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()

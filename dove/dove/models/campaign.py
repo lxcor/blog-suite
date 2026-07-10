@@ -1,34 +1,35 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Campaign(models.Model):
     STATUS_CHOICES = (
-        ('draft', 'Rascunho'),
-        ('scheduled', 'Agendado'),
-        ('sending', 'Enviando'),
-        ('sent', 'Enviado'),
+        ('draft', _('Draft')),
+        ('scheduled', _('Scheduled')),
+        ('sending', _('Sending')),
+        ('sent', _('Sent')),
     )
 
-    subject = models.CharField(max_length=200, verbose_name="Assunto")
-    preview_text = models.CharField(max_length=200, blank=True, verbose_name="Texto de Preview")
-    body_html = models.TextField(verbose_name="Corpo HTML")
-    body_text = models.TextField(blank=True, verbose_name="Corpo Texto Simples")
+    subject = models.CharField(max_length=200, verbose_name=_("Subject"))
+    preview_text = models.CharField(max_length=200, blank=True, verbose_name=_("Preview Text"))
+    body_html = models.TextField(verbose_name=_("HTML Body"))
+    body_text = models.TextField(blank=True, verbose_name=_("Plain Text Body"))
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default='draft',
-        verbose_name="Status"
+        verbose_name=_("Status")
     )
-    scheduled_at = models.DateTimeField(null=True, blank=True, verbose_name="Agendado para")
-    sent_at = models.DateTimeField(null=True, blank=True, verbose_name="Enviado em")
+    scheduled_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Scheduled for"))
+    sent_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Sent at"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Campanha"
-        verbose_name_plural = "Campanhas"
+        verbose_name = _("Campaign")
+        verbose_name_plural = _("Campaigns")
         ordering = ['-created_at']
 
     def __str__(self):
@@ -37,9 +38,9 @@ class Campaign(models.Model):
 
 class CampaignSend(models.Model):
     STATUS_CHOICES = (
-        ('queued', 'Na Fila'),
-        ('sent', 'Enviado'),
-        ('failed', 'Falhou'),
+        ('queued', _('Queued')),
+        ('sent', _('Sent')),
+        ('failed', _('Failed')),
     )
 
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='sends')
@@ -51,8 +52,8 @@ class CampaignSend(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Envio"
-        verbose_name_plural = "Envios"
+        verbose_name = _("Campaign Send")
+        verbose_name_plural = _("Campaign Sends")
         unique_together = [('campaign', 'email')]
         ordering = ['-created_at']
 

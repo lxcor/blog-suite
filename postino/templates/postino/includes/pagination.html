@@ -1,11 +1,12 @@
 {% load postino_tags %}
+{% load i18n %}
 
 {% if page_obj.has_other_pages %}
-<nav aria-label="Paginação" class="mt-5">
+<nav aria-label="{% trans 'Pagination' %}" class="mt-5">
     <ul class="pagination justify-content-center">
         {% if page_obj.number > 3 %}
         <li class="page-item">
-            <a class="page-link" href="?{% pagination_query_string page=1 %}" aria-label="Primeira página">
+            <a class="page-link" href="?{% pagination_query_string page=1 %}" aria-label="{% trans 'First page' %}">
                 <i class="bi bi-chevron-double-left"></i>
             </a>
         </li>
@@ -13,7 +14,7 @@
 
         {% if page_obj.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?{% pagination_query_string page=page_obj.previous_page_number %}" aria-label="Página anterior">
+            <a class="page-link" href="?{% pagination_query_string page=page_obj.previous_page_number %}" aria-label="{% trans 'Previous page' %}">
                 <i class="bi bi-chevron-left"></i>
             </a>
         </li>
@@ -34,14 +35,14 @@
             </li>
             {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
             <li class="page-item disabled">
-                <span class="page-link">…</span>
+                <span class="page-link">&hellip;</span>
             </li>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?{% pagination_query_string page=page_obj.next_page_number %}" aria-label="Próxima página">
+            <a class="page-link" href="?{% pagination_query_string page=page_obj.next_page_number %}" aria-label="{% trans 'Next page' %}">
                 <i class="bi bi-chevron-right"></i>
             </a>
         </li>
@@ -53,7 +54,7 @@
 
         {% if page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
         <li class="page-item">
-            <a class="page-link" href="?{% pagination_query_string page=page_obj.paginator.num_pages %}" aria-label="Última página">
+            <a class="page-link" href="?{% pagination_query_string page=page_obj.paginator.num_pages %}" aria-label="{% trans 'Last page' %}">
                 <i class="bi bi-chevron-double-right"></i>
             </a>
         </li>
@@ -62,7 +63,7 @@
 
     <div class="text-center mt-3">
         <p class="small text-muted mb-0">
-            Mostrando {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ page_obj.paginator.count }} resultado{{ page_obj.paginator.count|pluralize }}
+            {% blocktrans with start=page_obj.start_index end=page_obj.end_index count total=page_obj.paginator.count %}Showing {{ start }}–{{ end }} of {{ total }} result{% plural %}Showing {{ start }}–{{ end }} of {{ total }} results{% endblocktrans %}
         </p>
     </div>
 </nav>

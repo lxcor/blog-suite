@@ -2,3 +2,6 @@
 -e ../dove
 django>=4.2
 Pillow>=10.0
+django-extensions>=4.0
+Werkzeug>=3.0
+pyOpenSSL>=24.0

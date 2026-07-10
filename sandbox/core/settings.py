@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'postino',
     'dove',
     'core',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

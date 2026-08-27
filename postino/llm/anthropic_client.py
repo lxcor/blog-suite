@@ -64,8 +64,13 @@ class AnthropicClient(BaseLLMClient):
         raw = self._chat(_IDEA_SYSTEM, user_prompt)
         return json.loads(raw)
 
-    def generate_post_content(self, title: str, description: str, keywords: list[str], language: str = 'English') -> dict:
+    def generate_post_content(self, title: str, description: str, keywords: list[str], language: str = 'English', include_conclusion: bool = False) -> dict:
         kw_list = ', '.join(keywords) if keywords else title
+        structure = (
+            "intro paragraph, 3-4 main sections with <h2> subheadings, conclusion section"
+            if include_conclusion else
+            "intro paragraph, 3-4 main sections with <h2> subheadings (no conclusion section)"
+        )
         user_prompt = (
             f"Title: {title}\n"
             f"Description: {description}\n"
@@ -74,7 +79,7 @@ class AnthropicClient(BaseLLMClient):
             "Write a blog post following these rules:\n"
             "- Length: approximately 800-1200 words\n"
             "- HTML only (use <h2>, <h3>, <p>, <ul>, <li> — no <html>/<head>/<body>)\n"
-            "- Structure: intro paragraph, 3-4 main sections with <h2> subheadings, conclusion\n"
+            f"- Structure: {structure}\n"
             "- Naturally incorporate target keywords\n"
             "- Professional, informative tone\n\n"
             "Return JSON with exactly these keys:\n"
@@ -82,6 +87,38 @@ class AnthropicClient(BaseLLMClient):
             "reading_time: estimated reading time in minutes (integer)."
         )
         raw = self._chat(_POST_SYSTEM, user_prompt)
+        return json.loads(raw)
+
+    def generate_comments(
+        self,
+        post_title: str,
+        post_excerpt: str,
+        post_content_preview: str,
+        sentiment: str,
+        count: int,
+    ) -> list[dict]:
+        sentiment_guides = {
+            'positive': 'enthusiastic, grateful, or impressed — the reader found real value in the article',
+            'neutral':  'objective and curious — the reader asks a follow-up question or adds a factual observation',
+            'negative': 'critical or disappointed — the reader disagrees with a point or feels something was missing',
+        }
+        tone_guide = sentiment_guides.get(sentiment, sentiment_guides['positive'])
+        user_prompt = (
+            f"Post title: {post_title}\n"
+            f"Post excerpt: {post_excerpt}\n"
+            f"Article preview: {post_content_preview}\n\n"
+            f"Write {count} realistic reader comment(s) with a {sentiment} sentiment ({tone_guide}).\n"
+            "Each comment should feel like a genuine blog reader — vary the names and writing styles.\n"
+            "Use plausible fictional names and email addresses.\n\n"
+            "Return a JSON array with exactly these keys per item:\n"
+            '[{"author_name": "...", "author_email": "...", "content": "..."}, ...]\n\n'
+            "content: 1-3 sentences, conversational, references the article specifically."
+        )
+        system = (
+            "You are simulating realistic blog readers leaving comments. "
+            "Respond ONLY with valid JSON — no markdown fences, no extra text."
+        )
+        raw = self._chat(system, user_prompt)
         return json.loads(raw)
 
     def translate_post_content(

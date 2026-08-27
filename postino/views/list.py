@@ -22,7 +22,7 @@ class BlogListView(ListView):
         lang = self._active_language()
         queryset = Post.objects.filter(
             status='published', language=lang,
-        ).select_related('category', 'author').prefetch_related('tags').order_by('-published_date')
+        ).select_related('category', 'author').prefetch_related('tags', 'digest_articles').order_by('-published_date')
 
         category_slug = self.kwargs.get('category_slug')
         if category_slug:
@@ -38,6 +38,10 @@ class BlogListView(ListView):
         if author_slug:
             user = get_object_or_404(get_user_model(), username=author_slug)
             queryset = queryset.filter(author=user)
+
+        feed = self.request.GET.get('feed', '').strip()
+        if feed:
+            queryset = queryset.filter(digest_articles__source_feed=feed).distinct()
 
         return queryset
 
@@ -68,6 +72,30 @@ class BlogListView(ListView):
             status='published', language=lang,
         ).select_related('category', 'author').order_by('-published_date')[:5]
 
+        _FEED_DISPLAY = [
+            ('soja', 'Soja'), ('milho', 'Milho'), ('cafe', 'Café'),
+            ('boi', 'Boi Gordo'), ('graos', 'Grãos'), ('leite', 'Leite'),
+            ('algodao', 'Algodão'), ('trigo', 'Trigo'),
+            ('hortifruti', 'Hortifruti'), ('agronegocio', 'Agronegócio'),
+            ('meio-ambiente', 'Meio Ambiente'), ('outros', 'Outros'),
+        ]
+        feed_counts_qs = (
+            Post.objects.filter(status='published', language=lang)
+            .values('digest_articles__source_feed')
+            .annotate(n=Count('id', distinct=True))
+            .filter(digest_articles__source_feed__isnull=False)
+            .exclude(digest_articles__source_feed='')
+        )
+        feed_counts = {
+            row['digest_articles__source_feed']: row['n']
+            for row in feed_counts_qs
+        }
+        feed_pills = [
+            (key, label, feed_counts[key])
+            for key, label in _FEED_DISPLAY
+            if key in feed_counts
+        ]
+
         context.update({
             'featured_post': featured_post,
             'categories': categories,
@@ -77,6 +105,8 @@ class BlogListView(ListView):
             'total_posts': Post.objects.filter(status='published', language=lang).count(),
             'current_category': self.kwargs.get('category_slug'),
             'current_tag': self.kwargs.get('tag_slug'),
+            'current_feed': self.request.GET.get('feed', '').strip(),
+            'feed_pills': feed_pills,
             'per_page_options': [6, 12, 24, 48],
             'default_per_page': 12,
         })

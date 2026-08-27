@@ -11,7 +11,7 @@ class BaseLLMClient:
         """
         raise NotImplementedError
 
-    def generate_post_content(self, title: str, description: str, keywords: list[str], language: str = 'English') -> dict:
+    def generate_post_content(self, title: str, description: str, keywords: list[str], language: str = 'English', include_conclusion: bool = False) -> dict:
         """Write a full blog article for a given title and description.
 
         Args:
@@ -21,6 +21,28 @@ class BaseLLMClient:
 
         Returns:
             dict with keys 'content' (HTML str) and 'reading_time' (int, minutes)
+        """
+        raise NotImplementedError
+
+    def generate_comments(
+        self,
+        post_title: str,
+        post_excerpt: str,
+        post_content_preview: str,
+        sentiment: str,
+        count: int,
+    ) -> list[dict]:
+        """Generate realistic reader comments for a blog post.
+
+        Args:
+            post_title: Title of the post
+            post_excerpt: Post excerpt/description
+            post_content_preview: First ~600 chars of the article body
+            sentiment: 'positive', 'neutral', or 'negative'
+            count: Number of comments to generate (1-3)
+
+        Returns:
+            list of {'author_name': str, 'author_email': str, 'content': str}
         """
         raise NotImplementedError
 

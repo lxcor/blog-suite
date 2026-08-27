@@ -49,6 +49,12 @@ class Command(BaseCommand):
             action='store_true',
             help='Set post status to "published" instead of "draft".',
         )
+        parser.add_argument(
+            '--conclusion',
+            action='store_true',
+            dest='conclusion',
+            help='Include a conclusion section in the generated article (omitted by default).',
+        )
 
     def handle(self, *args, **options):
         author_username = options['author']
@@ -79,12 +85,14 @@ class Command(BaseCommand):
                 options['title'], options['description'], llm
             )
 
+        include_conclusion = options['conclusion']
         self.stdout.write(f'Generating article: {title} ...')
         try:
             result = llm.generate_post_content(
                 title=title,
                 description=description,
                 keywords=keywords,
+                include_conclusion=include_conclusion,
             )
         except (json.JSONDecodeError, KeyError) as exc:
             raise CommandError(f'LLM returned invalid JSON: {exc}')

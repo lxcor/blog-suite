@@ -92,3 +92,5 @@ POSTINO_LLM_PROVIDER = os.environ.get('POSTINO_LLM_PROVIDER', 'openai')
 POSTINO_LLM_MODEL = os.environ.get('POSTINO_LLM_MODEL', 'gpt-4o-mini')
 POSTINO_LLM_API_KEY = os.environ.get('POSTINO_LLM_API_KEY', '')
 
+SESSION_COOKIE_NAME = 'sessionid_blog'
+

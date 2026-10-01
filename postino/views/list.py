@@ -1,12 +1,25 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView
 
 from ..models import Category, Post, Tag
+
+
+def _has_digest_relation():
+    """True only for host projects that also install a `digest` app whose
+    DigestArticle model points a FK at Post with related_name='digest_articles'
+    (e.g. agrogato-web's news bulletin). Most postino consumers don't have
+    this app at all, so every usage below must be optional, not assumed."""
+    try:
+        Post._meta.get_field('digest_articles')
+        return True
+    except FieldDoesNotExist:
+        return False
 
 
 class BlogListView(ListView):
@@ -20,9 +33,11 @@ class BlogListView(ListView):
 
     def get_queryset(self):
         lang = self._active_language()
+        has_digest = _has_digest_relation()
+        prefetch = ('tags', 'digest_articles') if has_digest else ('tags',)
         queryset = Post.objects.filter(
             status='published', language=lang,
-        ).select_related('category', 'author').prefetch_related('tags', 'digest_articles').order_by('-published_date')
+        ).select_related('category', 'author').prefetch_related(*prefetch).order_by('-published_date')
 
         category_slug = self.kwargs.get('category_slug')
         if category_slug:
@@ -40,7 +55,7 @@ class BlogListView(ListView):
             queryset = queryset.filter(author=user)
 
         feed = self.request.GET.get('feed', '').strip()
-        if feed:
+        if feed and has_digest:
             queryset = queryset.filter(digest_articles__source_feed=feed).distinct()
 
         return queryset
@@ -72,29 +87,31 @@ class BlogListView(ListView):
             status='published', language=lang,
         ).select_related('category', 'author').order_by('-published_date')[:5]
 
-        _FEED_DISPLAY = [
-            ('soja', 'Soja'), ('milho', 'Milho'), ('cafe', 'Café'),
-            ('boi', 'Boi Gordo'), ('graos', 'Grãos'), ('leite', 'Leite'),
-            ('algodao', 'Algodão'), ('trigo', 'Trigo'),
-            ('hortifruti', 'Hortifruti'), ('agronegocio', 'Agronegócio'),
-            ('meio-ambiente', 'Meio Ambiente'), ('outros', 'Outros'),
-        ]
-        feed_counts_qs = (
-            Post.objects.filter(status='published', language=lang)
-            .values('digest_articles__source_feed')
-            .annotate(n=Count('id', distinct=True))
-            .filter(digest_articles__source_feed__isnull=False)
-            .exclude(digest_articles__source_feed='')
-        )
-        feed_counts = {
-            row['digest_articles__source_feed']: row['n']
-            for row in feed_counts_qs
-        }
-        feed_pills = [
-            (key, label, feed_counts[key])
-            for key, label in _FEED_DISPLAY
-            if key in feed_counts
-        ]
+        feed_pills = []
+        if _has_digest_relation():
+            _FEED_DISPLAY = [
+                ('soja', 'Soja'), ('milho', 'Milho'), ('cafe', 'Café'),
+                ('boi', 'Boi Gordo'), ('graos', 'Grãos'), ('leite', 'Leite'),
+                ('algodao', 'Algodão'), ('trigo', 'Trigo'),
+                ('hortifruti', 'Hortifruti'), ('agronegocio', 'Agronegócio'),
+                ('meio-ambiente', 'Meio Ambiente'), ('outros', 'Outros'),
+            ]
+            feed_counts_qs = (
+                Post.objects.filter(status='published', language=lang)
+                .values('digest_articles__source_feed')
+                .annotate(n=Count('id', distinct=True))
+                .filter(digest_articles__source_feed__isnull=False)
+                .exclude(digest_articles__source_feed='')
+            )
+            feed_counts = {
+                row['digest_articles__source_feed']: row['n']
+                for row in feed_counts_qs
+            }
+            feed_pills = [
+                (key, label, feed_counts[key])
+                for key, label in _FEED_DISPLAY
+                if key in feed_counts
+            ]
 
         context.update({
             'featured_post': featured_post,

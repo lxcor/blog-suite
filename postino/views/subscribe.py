@@ -11,6 +11,8 @@ def blog_subscribe(request):
         form = SubscribeForm(request.POST)
         if form.is_valid():
             Subscription.objects.create(email=form.cleaned_data['email'])
-            messages.success(request, 'Obrigado por assinar nosso Boletim Informativo!')
+            messages.success(request, getattr(
+                settings, 'POSTINO_SUBSCRIBE_SUCCESS_MESSAGE',
+                'Obrigado por assinar nosso Boletim Informativo!'))
 
     return redirect(getattr(settings, 'POSTINO_REDIRECT_URL', '/'))

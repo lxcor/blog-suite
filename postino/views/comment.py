@@ -31,6 +31,8 @@ def blog_comment(request, post_id):
             admin_email = getattr(settings, 'POSTINO_ADMIN_EMAIL', settings.DEFAULT_FROM_EMAIL)
             send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [admin_email], fail_silently=True)
 
-            messages.success(request, 'Obrigado pelo seu comentário!')
+            messages.success(request, getattr(
+                settings, 'POSTINO_COMMENT_SUCCESS_MESSAGE',
+                'Obrigado pelo seu comentário!'))
 
     return redirect(getattr(settings, 'POSTINO_REDIRECT_URL', '/'))

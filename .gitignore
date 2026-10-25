@@ -22,3 +22,4 @@ sandbox/staticfiles/
 
 # Production venv (tools.sh)
 venv/
+!.env.example

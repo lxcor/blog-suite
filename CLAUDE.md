@@ -10,6 +10,20 @@ This is a monorepo containing two installable Django apps that together form a b
 - `dove/` — the newsletter app (`lxcor-dove`): dispatches email campaigns to subscribers collected by postino.
 - `sandbox/` — a Django project that wires both apps together; it is also the live site at blog-suite.lxcor.com.
 
+## Quick start (fresh clone)
+
+```bash
+git clone https://github.com/lxcor/blog-suite.git && cd blog-suite
+cp .env.example .env            # sets DJANGO_DEBUG=1 → SQLite, console email
+python3 -m venv venv && venv/bin/pip install -r sandbox/requirements.txt
+cd sandbox
+../venv/bin/python manage.py migrate
+../venv/bin/python manage.py createsuperuser   # must come first: the fixture's posts belong to user id 1
+../venv/bin/python manage.py loaddata initial_data
+../venv/bin/python manage.py runserver
+```
+Without `.env` (or `DJANGO_DEBUG=1`), settings refuse to start, because debug is off by default and production needs a real `DJANGO_SECRET_KEY`. This is deliberate: the live site fails closed if its `.env` goes missing.
+
 ## Setup and commands
 
 This repo is deployed as the live site **https://blog-suite.lxcor.com** (Alaude box, Virtualmin user `blog-suite-web`, clone at `/home/blog-suite-web/blog-suite`). Apache/mod_wsgi serves `sandbox/core/wsgi.py` from the repo-root `venv/`.

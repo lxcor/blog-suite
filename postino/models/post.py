@@ -23,35 +23,33 @@ class PostQuerySet(models.QuerySet):
         Respects POSTINO_NOINDEX_AFTER_DAYS (global) and
         Category.noindex_after_days (per-category override).
         When the setting is unset, all published posts are returned unchanged.
+        Cutoffs are computed in Python to stay compatible with SQLite.
         """
         days = getattr(settings, 'POSTINO_NOINDEX_AFTER_DAYS', None)
         if days is None:
             return self
 
-        from django.db.models import (
-            Case, DurationField, ExpressionWrapper, F, Q, Value, When,
-        )
-        from django.db.models.functions import Now
+        from django.db.models import Q
 
-        qs = self.annotate(
-            _effective_days=Case(
-                When(
-                    category__noindex_after_days__isnull=False,
-                    then=F('category__noindex_after_days'),
-                ),
-                default=Value(days),
-                output_field=models.PositiveIntegerField(),
-            )
-        ).annotate(
-            _cutoff=ExpressionWrapper(
-                Now() - ExpressionWrapper(
-                    F('_effective_days') * Value(timedelta(days=1)),
-                    output_field=DurationField(),
-                ),
-                output_field=models.DateTimeField(),
-            )
+        now = timezone.now()
+        # Posts with no category override use the global cutoff.
+        fresh = Q(
+            category__noindex_after_days__isnull=True,
+            published_date__gte=now - timedelta(days=days),
         )
-        return qs.filter(Q(keep_indexed=True) | Q(published_date__gte=F('_cutoff')))
+        # Per-category overrides: one Q per distinct override value.
+        overrides = (
+            Category.objects
+            .exclude(noindex_after_days__isnull=True)
+            .values_list('noindex_after_days', flat=True)
+            .distinct()
+        )
+        for d in overrides:
+            fresh |= Q(
+                category__noindex_after_days=d,
+                published_date__gte=now - timedelta(days=d),
+            )
+        return self.filter(Q(keep_indexed=True) | fresh)
 
 
 class Post(models.Model):
@@ -274,7 +272,7 @@ class Post(models.Model):
                 days = cat_days
         if not self.published_date:
             return False
-        return (timezone.now() - self.published_date).days > days
+        return timezone.now() - self.published_date > timedelta(days=days)
 
     @property
     def featured_image_url(self):

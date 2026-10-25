@@ -1,3 +1,6 @@
+import io
+import os
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -97,6 +100,10 @@ class Post(models.Model):
             models.Index(fields=['category']),
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_image = self.featured_image.name if self.featured_image else None
+
     def __str__(self):
         return self.title
 
@@ -114,6 +121,59 @@ class Post(models.Model):
             self.meta_description = self.excerpt[:200]
 
         super().save(*args, **kwargs)
+
+        if self._process_featured_image():
+            type(self).objects.filter(pk=self.pk).update(featured_image=self.featured_image.name)
+
+        self._original_image = self.featured_image.name if self.featured_image else None
+
+    def _process_featured_image(self):
+        """Crop to 1200×630 and convert to WebP whenever a new image is uploaded."""
+        if not self.featured_image:
+            return False
+        if self.featured_image.name == self._original_image:
+            return False
+
+        from PIL import Image
+        from django.core.files.base import ContentFile
+        from django.core.files.storage import default_storage
+
+        TARGET_W, TARGET_H = 1200, 630
+
+        try:
+            with Image.open(self.featured_image.path) as img:
+                img = img.convert('RGB')
+                src_w, src_h = img.size
+                target_ratio = TARGET_W / TARGET_H
+                src_ratio = src_w / src_h
+
+                if src_ratio > target_ratio:
+                    new_w = int(src_h * target_ratio)
+                    left = (src_w - new_w) // 2
+                    img = img.crop((left, 0, left + new_w, src_h))
+                else:
+                    new_h = int(src_w / target_ratio)
+                    top = (src_h - new_h) // 2
+                    img = img.crop((0, top, src_w, top + new_h))
+
+                img = img.resize((TARGET_W, TARGET_H), Image.LANCZOS)
+                buf = io.BytesIO()
+                img.save(buf, format='WEBP', quality=85)
+                buf.seek(0)
+        except Exception:
+            return False
+
+        old_name = self.featured_image.name
+        stem = os.path.splitext(old_name)[0]
+        new_name = default_storage.save(f"{stem}.webp", ContentFile(buf.read()))
+
+        try:
+            default_storage.delete(old_name)
+        except Exception:
+            pass
+
+        self.featured_image.name = new_name
+        return True
 
     def get_absolute_url(self):
         return reverse('postino:blog_post_detail', kwargs={'slug': self.slug})

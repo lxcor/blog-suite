@@ -204,21 +204,25 @@ class Post(models.Model):
 
     def _generate_slug(self):
         """Build an auto-slug from the title, respecting POSTINO_SLUG_* settings."""
-        title = self.title
-        stopwords = getattr(settings, 'POSTINO_SLUG_STOPWORDS', None)
-        if stopwords:
-            words = title.split()
-            filtered = [w for w in words if w.lower() not in stopwords]
-            if filtered:
-                title = ' '.join(filtered)
+        base = slugify(self.title)
 
-        slug = slugify(title) or slugify(self.title)
+        stopwords = getattr(settings, 'POSTINO_SLUG_STOPWORDS', None)
+        if stopwords and base:
+            parts = [w for w in base.split('-') if w not in stopwords]
+            if parts:
+                base = '-'.join(parts)
+
+        slug = base or slugify(self.title)
 
         max_len = getattr(settings, 'POSTINO_SLUG_MAX_LENGTH', None)
         if max_len is None:
             max_len = self._meta.get_field('slug').max_length
         if len(slug) > max_len:
-            slug = slug[:max_len].rsplit('-', 1)[0]
+            # Only split on a word boundary if the cut doesn't already land on one.
+            if slug[max_len] == '-':
+                slug = slug[:max_len]
+            else:
+                slug = slug[:max_len].rsplit('-', 1)[0]
 
         return slug or slugify(self.title)
 

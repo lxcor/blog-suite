@@ -1,12 +1,14 @@
+import os
+import shutil
+import tempfile
 from unittest.mock import patch
-
-from postino.models.post import PostQuerySet
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 
 from postino.models import Category, Post
+from postino.models.post import PostQuerySet
 
 User = get_user_model()
 
@@ -20,7 +22,22 @@ def _webp_bytes():
     return buf.getvalue()
 
 
-class ImageFilenameTestCase(TestCase):
+class MediaIsolatedTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._media = tempfile.mkdtemp(prefix='postino-test-media-')
+        cls._override = override_settings(MEDIA_ROOT=cls._media)
+        cls._override.enable()
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls._override.disable()
+        shutil.rmtree(cls._media, ignore_errors=True)
+
+
+class ImageFilenameTestCase(MediaIsolatedTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user('imgtest', password='x')
@@ -42,6 +59,11 @@ class ImageFilenameTestCase(TestCase):
         max_length = Post._meta.get_field('featured_image').max_length
         self.assertLessEqual(len(p.featured_image.name), max_length)
         self.assertTrue(p.featured_image.storage.exists(p.featured_image.name))
+        # File must be inside the temp media dir, not the live media folder.
+        self.assertTrue(
+            p.featured_image.storage.path(p.featured_image.name).startswith(self._media),
+            'Stored file is outside the isolated temp media dir',
+        )
         # original upload is gone
         self.assertFalse(p.featured_image.storage.exists('blog/featured/' + 'source.jpg'))
 
@@ -70,7 +92,6 @@ class ImageFilenameTestCase(TestCase):
         storage = p.featured_image.storage
 
         # Track all webp files present before the failing save
-        import os
         media_dir = os.path.join(storage.location, 'blog/featured')
         def _webps():
             result = set()
@@ -129,6 +150,16 @@ class SlugGenerationTestCase(TestCase):
         self.assertEqual(p.slug, 'how-dome-works-platform')
 
     @override_settings(
+        POSTINO_SLUG_STOPWORDS={'a', 'an', 'the', 'of', 'for', 'and', 'to', 'in', 'on'},
+        POSTINO_SLUG_MAX_LENGTH=None,
+    )
+    def test_stopwords_removed_with_punctuation(self):
+        """Punctuation in the title must not prevent stop-word matching."""
+        p = self._create('Tempietto: the Dome, for a Platform')
+        # slugify -> 'tempietto-the-dome-for-a-platform'; stop words removed
+        self.assertEqual(p.slug, 'tempietto-dome-platform')
+
+    @override_settings(
         POSTINO_SLUG_STOPWORDS=None,
         POSTINO_SLUG_MAX_LENGTH=10,
     )
@@ -137,6 +168,17 @@ class SlugGenerationTestCase(TestCase):
         # slugify -> 'hello-world-foo-bar', cut at 10 -> 'hello-worl' -> rsplit -> 'hello'
         self.assertLessEqual(len(p.slug), 10)
         self.assertFalse(p.slug.endswith('-'))
+
+    @override_settings(
+        POSTINO_SLUG_STOPWORDS=None,
+        POSTINO_SLUG_MAX_LENGTH=11,
+    )
+    def test_max_length_cut_exactly_on_hyphen(self):
+        """When slug[max_len] is '-', slice to max_len without dropping an extra word."""
+        # 'hello-world-foo' — position 11 is '-' (between 'world' and 'foo')
+        p = self._create('hello world foo')
+        # slug = 'hello-world-foo', len=15, cut at 11: slug[11]=='-' -> 'hello-world'
+        self.assertEqual(p.slug, 'hello-world')
 
     @override_settings(
         POSTINO_SLUG_STOPWORDS={'a', 'an', 'the'},

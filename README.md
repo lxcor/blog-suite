@@ -102,4 +102,6 @@ The sandbox reads its settings from `.env` in the repo root. Debug is **off** un
 
 ## License
 
-MIT
+Licensed under the [Apache License, Version 2.0](LICENSE).
+
+If you redistribute this code or a modified version of it, keep the `LICENSE` and [`NOTICE`](NOTICE) files. The NOTICE file holds the attribution, which section 4(d) of the license requires you to preserve.

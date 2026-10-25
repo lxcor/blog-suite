@@ -35,4 +35,4 @@ where = ["."]
 include = ["postino*"]
 
 [tool.setuptools.package-data]
-"postino" = ["templates/**/*.html", "locale/**/*"]
+"postino" = ["templates/**/*.html", "templates/**/*.xml", "locale/**/*"]

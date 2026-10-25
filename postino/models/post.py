@@ -68,6 +68,7 @@ class Post(models.Model):
         upload_to='blog/featured/%Y/%m/%d/',
         blank=True,
         null=True,
+        max_length=255,
         verbose_name=_("Featured Image")
     )
 
@@ -162,7 +163,7 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = self._generate_slug()
 
         if self.status == 'published' and not self.published_date:
             self.published_date = timezone.now()
@@ -175,13 +176,59 @@ class Post(models.Model):
 
         super().save(*args, **kwargs)
 
-        if self._process_featured_image():
-            type(self).objects.filter(pk=self.pk).update(featured_image=self.featured_image.name)
+        result = self._process_featured_image()
+        if result:
+            old_name, new_name = result
+            field = self._meta.get_field('featured_image')
+            try:
+                type(self).objects.filter(pk=self.pk).update(featured_image=new_name)
+            except Exception:
+                logger.exception(
+                    'postino: DB update for featured_image failed for post %s', self.pk
+                )
+                try:
+                    field.storage.delete(new_name)
+                except Exception:
+                    pass
+                self.featured_image.name = old_name
+            else:
+                if old_name != new_name:
+                    try:
+                        field.storage.delete(old_name)
+                    except Exception:
+                        logger.exception(
+                            'postino: could not delete original image %s', old_name
+                        )
 
         self._original_image = self.featured_image.name if self.featured_image else None
 
+    def _generate_slug(self):
+        """Build an auto-slug from the title, respecting POSTINO_SLUG_* settings."""
+        title = self.title
+        stopwords = getattr(settings, 'POSTINO_SLUG_STOPWORDS', None)
+        if stopwords:
+            words = title.split()
+            filtered = [w for w in words if w.lower() not in stopwords]
+            if filtered:
+                title = ' '.join(filtered)
+
+        slug = slugify(title) or slugify(self.title)
+
+        max_len = getattr(settings, 'POSTINO_SLUG_MAX_LENGTH', None)
+        if max_len is None:
+            max_len = self._meta.get_field('slug').max_length
+        if len(slug) > max_len:
+            slug = slug[:max_len].rsplit('-', 1)[0]
+
+        return slug or slugify(self.title)
+
     def _process_featured_image(self):
-        """Crop and convert featured_image on upload. Controlled by POSTINO_FEATURED_IMAGE_* settings."""
+        """Crop and convert featured_image on upload. Controlled by POSTINO_FEATURED_IMAGE_* settings.
+
+        Returns (old_name, new_name) on success so the caller can update the DB
+        row first, then delete old_name only after the update commits.
+        Returns False when no processing is needed or on error.
+        """
         size = getattr(settings, 'POSTINO_FEATURED_IMAGE_SIZE', (1200, 630))
         if size is None:
             return False
@@ -198,7 +245,6 @@ class Post(models.Model):
 
         from PIL import Image
         from django.core.files.base import ContentFile
-        from django.core.files.storage import default_storage
 
         target_w, target_h = size
 
@@ -232,16 +278,17 @@ class Post(models.Model):
         old_name = self.featured_image.name
         directory = os.path.dirname(old_name)
         stem = f"{directory}/{self.slug}" if directory else self.slug
-        new_name = default_storage.save(f"{stem}{ext}", ContentFile(buf.read()))
-
-        if old_name != new_name:
-            try:
-                default_storage.delete(old_name)
-            except Exception:
-                logger.exception('postino: could not delete original image %s', old_name)
+        field = self._meta.get_field('featured_image')
+        try:
+            new_name = field.storage.save(
+                f"{stem}{ext}", ContentFile(buf.read()), max_length=field.max_length
+            )
+        except Exception:
+            logger.exception('postino: could not save processed image for post %s', self.pk)
+            return False
 
         self.featured_image.name = new_name
-        return True
+        return old_name, new_name
 
     def get_absolute_url(self):
         return reverse('postino:blog_post_detail', kwargs={'slug': self.slug})

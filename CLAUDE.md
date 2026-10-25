@@ -81,6 +81,8 @@ These settings are consumed by postino/dove but are not in the sandbox settings 
 | `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow output format (`'WEBP'`, `'JPEG'`, `'PNG'`) |
 | `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Pillow compression quality (1–95) |
 | `POSTINO_SITEMAP_ENABLED` | `True` | `False` removes the `<mount>/sitemap.xml` route from `postino/urls.py` |
+| `POSTINO_SLUG_STOPWORDS` | `None` | Set of lowercase words dropped from auto-generated slugs for new posts (e.g. `{'a','an','the','of','for'}`). Never rewrites existing slugs (would break live URLs). Google has no hard URL length limit; keyword-bearing slugs are good; filler words just add length. |
+| `POSTINO_SLUG_MAX_LENGTH` | `None` | Hard cap for auto-generated slugs, cut at a word boundary (never mid-word, no trailing hyphen). Defaults to the field limit (200). Only affects new posts. |
 | `POSTINO_NOINDEX_AFTER_DAYS` | `None` | Posts older than N days get `X-Robots-Tag: noindex, follow` + meta tag and are removed from sitemaps; `None` disables entirely (safe default for evergreen content). Per-post override: `Post.keep_indexed = True`. Per-category override: `Category.noindex_after_days`. |
 | `DOVE_FROM_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL prepended to unsubscribe links |

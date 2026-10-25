@@ -69,6 +69,8 @@ Then run `python manage.py migrate`.
 | `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow format string for the output file (`'WEBP'`, `'JPEG'`, `'PNG'`) |
 | `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Compression quality passed to Pillow (1–95) |
 | `POSTINO_SITEMAP_ENABLED` | `True` | Set to `False` to disable the `<mount>/sitemap.xml` route (useful when the consumer mounts its own sitemap at the root) |
+| `POSTINO_SLUG_STOPWORDS` | `None` | A set of lowercase words to drop from auto-generated slugs (e.g. `{'a','an','the','of','for'}`). Only affects new posts; existing slugs are never rewritten. |
+| `POSTINO_SLUG_MAX_LENGTH` | `None` | Hard cap for auto-generated slugs, cut at a word boundary. Defaults to the field limit (200). |
 | `POSTINO_NOINDEX_AFTER_DAYS` | `None` | Posts older than this many days get `<meta name="robots" content="noindex, follow">` and an `X-Robots-Tag: noindex, follow` response header, and are excluded from sitemaps. `None` (default) disables the feature entirely — safe for evergreen content. |
 | `DOVE_FROM_EMAIL` | `DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL put in front of unsubscribe links |

@@ -19,3 +19,6 @@ sandbox/staticfiles/
 # Env
 .env
 .env.*
+
+# Production venv (tools.sh)
+venv/

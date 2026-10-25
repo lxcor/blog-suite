@@ -1,7 +1,4 @@
 -e ..
 -e ../dove
-django>=4.2
+django>=4.2,<5.0  # match consumers (belluaire-web, agrogato-web on 4.2 LTS)
 Pillow>=10.0
-django-extensions>=4.0
-Werkzeug>=3.0
-pyOpenSSL>=24.0

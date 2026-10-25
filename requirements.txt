@@ -1,0 +1,6 @@
+# Production venv: ./tools.sh venv-install  (run from the repo root)
+-e .
+-e ./dove
+django>=4.2,<5.0  # match consumers (belluaire-web, agrogato-web on 4.2 LTS)
+Pillow>=10.0
+psycopg2-binary>=2.9  # production DB is Postgres

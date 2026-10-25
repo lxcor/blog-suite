@@ -8,54 +8,36 @@ This is a monorepo containing two installable Django apps that together form a b
 
 - `postino/` — the blog app (`lxcor-postino`): content management with posts, categories, tags, comments, subscriptions, author profiles, and SEO fields.
 - `dove/` — the newsletter app (`lxcor-dove`): dispatches email campaigns to subscribers collected by postino.
-- `sandbox/` — a Django project that wires both apps together for local development.
+- `sandbox/` — a Django project that wires both apps together; it is also the live site at blog-suite.lxcor.com.
 
-## Development setup and commands
+## Setup and commands
 
-All development commands run inside the sandbox virtualenv. Activate it first:
+This repo is deployed as the live site **https://blog-suite.lxcor.com** (Alaude box, Virtualmin user `blog-suite-web`, clone at `/home/blog-suite-web/blog-suite`). Apache/mod_wsgi serves `sandbox/core/wsgi.py` from the repo-root `venv/`.
 
+**Virtualenv** (repo root, built from `requirements.txt` — postino and dove are installed editable, so code edits are live after an app reload):
 ```bash
-cd /root/projects/blog-suite/sandbox
-source .venv/bin/activate
+cd /home/blog-suite-web/blog-suite
+./tools.sh venv-install      # rebuild from scratch
+./tools.sh venv-update       # install new requirements
+source activate.sh
+```
+Django is pinned to 4.2 LTS to match the apps that consume postino (belluaire-web, agrogato-web).
+
+**Settings** come from the git-ignored repo-root `.env` (read by `sandbox/core/settings.py`): `DJANGO_DEBUG` (default off), `DJANGO_SECRET_KEY` (required when debug is off), `DJANGO_ALLOWED_HOSTS`, `DJANGO_DB_NAME`/`_USER`/`_PASSWORD`/`_HOST`/`_PORT` (Postgres; defaults match the Sophia dev DB `blogsuite`, production DB is `blog_suite_web`, registered to the Virtualmin domain so the nightly backup covers it), optional `DJANGO_EMAIL_*`, and the `POSTINO_LLM_*` keys. Never commit `.env`.
+
+**Manage commands** (run from `sandbox/`):
+```bash
+cd sandbox
+../venv/bin/python manage.py migrate
+../venv/bin/python manage.py collectstatic --noinput
+../venv/bin/python manage.py loaddata initial_data
+../venv/bin/python manage.py test postino dove      # no tests exist yet
+../venv/bin/python manage.py send_campaign <campaign_id>
 ```
 
-Or prefix each command with the venv python:
+**Reload the live site** after code or settings changes: `touch sandbox/core/wsgi.py` (restarts the mod_wsgi daemon). Apache config itself is root-managed.
 
-```bash
-/root/projects/blog-suite/sandbox/.venv/bin/python manage.py <command>
-```
-
-**Run the development server:**
-```bash
-python sandbox/manage.py runserver
-```
-
-**Apply migrations:**
-```bash
-python sandbox/manage.py migrate
-```
-
-**Load sample data:**
-```bash
-python sandbox/manage.py loaddata initial_data
-```
-
-**Run tests:**
-```bash
-python sandbox/manage.py test postino
-python sandbox/manage.py test dove
-```
-
-**Send a newsletter campaign:**
-```bash
-python sandbox/manage.py send_campaign <campaign_id>
-```
-
-**Install dependencies** (sandbox installs both apps as editable packages):
-```bash
-pip install -r sandbox/requirements.txt
-```
-`sandbox/requirements.txt` references `-e ..` (postino) and `-e ../dove` (dove), so edits to either package are immediately reflected without reinstalling.
+**Releasing to consumer apps:** commit and push to `main`; each consumer reinstalls with `pip install --no-deps --force-reinstall git+ssh://git@github.com/lxcor/blog-suite.git#egg=lxcor-postino` as its own site user. Keep changes backward compatible — new behaviour behind an optional setting.
 
 ## URL structure
 

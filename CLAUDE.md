@@ -77,6 +77,9 @@ These settings are consumed by postino/dove but are not in the sandbox settings 
 | `POSTINO_ADMIN_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Recipient for new-comment notifications |
 | `POSTINO_REDIRECT_URL` | `'/'` | Redirect target after newsletter subscription |
 | `POSTINO_LLM_REASONING_EFFORT` | `None` | OpenAI reasoning models only (e.g. `'medium'` for `gpt-6-luna`): sent as `reasoning_effort` in place of `temperature=0`, which those models reject |
+| `POSTINO_FEATURED_IMAGE_SIZE` | `(1200, 630)` | `(w, h)` to crop/resize uploaded featured images to; `None` disables processing entirely |
+| `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow output format (`'WEBP'`, `'JPEG'`, `'PNG'`) |
+| `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Pillow compression quality (1–95) |
 | `DOVE_FROM_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL prepended to unsubscribe links |
 

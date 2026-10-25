@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 
 from django.conf import settings
@@ -7,6 +8,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 from .category import Category
 from .tag import Tag
@@ -100,9 +103,15 @@ class Post(models.Model):
             models.Index(fields=['category']),
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_image = self.featured_image.name if self.featured_image else None
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._original_image = (
+            instance.featured_image.name
+            if 'featured_image' in field_names and instance.featured_image
+            else None
+        )
+        return instance
 
     def __str__(self):
         return self.title
@@ -128,23 +137,33 @@ class Post(models.Model):
         self._original_image = self.featured_image.name if self.featured_image else None
 
     def _process_featured_image(self):
-        """Crop to 1200×630 and convert to WebP whenever a new image is uploaded."""
+        """Crop and convert featured_image on upload. Controlled by POSTINO_FEATURED_IMAGE_* settings."""
+        size = getattr(settings, 'POSTINO_FEATURED_IMAGE_SIZE', (1200, 630))
+        if size is None:
+            return False
+
         if not self.featured_image:
             return False
-        if self.featured_image.name == self._original_image:
+        original_image = getattr(self, '_original_image', None)
+        if self.featured_image.name == original_image:
             return False
+
+        fmt = getattr(settings, 'POSTINO_FEATURED_IMAGE_FORMAT', 'WEBP').upper()
+        quality = getattr(settings, 'POSTINO_FEATURED_IMAGE_QUALITY', 85)
+        ext = '.jpg' if fmt == 'JPEG' else f'.{fmt.lower()}'
 
         from PIL import Image
         from django.core.files.base import ContentFile
         from django.core.files.storage import default_storage
 
-        TARGET_W, TARGET_H = 1200, 630
+        target_w, target_h = size
 
         try:
-            with Image.open(self.featured_image.path) as img:
+            self.featured_image.open('rb')
+            with Image.open(self.featured_image) as img:
                 img = img.convert('RGB')
                 src_w, src_h = img.size
-                target_ratio = TARGET_W / TARGET_H
+                target_ratio = target_w / target_h
                 src_ratio = src_w / src_h
 
                 if src_ratio > target_ratio:
@@ -156,21 +175,25 @@ class Post(models.Model):
                     top = (src_h - new_h) // 2
                     img = img.crop((0, top, src_w, top + new_h))
 
-                img = img.resize((TARGET_W, TARGET_H), Image.LANCZOS)
+                img = img.resize((target_w, target_h), Image.LANCZOS)
                 buf = io.BytesIO()
-                img.save(buf, format='WEBP', quality=85)
+                img.save(buf, format=fmt, quality=quality)
                 buf.seek(0)
         except Exception:
+            logger.exception('postino: featured image processing failed for post %s', self.pk)
             return False
+        finally:
+            self.featured_image.close()
 
         old_name = self.featured_image.name
         stem = os.path.splitext(old_name)[0]
-        new_name = default_storage.save(f"{stem}.webp", ContentFile(buf.read()))
+        new_name = default_storage.save(f"{stem}{ext}", ContentFile(buf.read()))
 
-        try:
-            default_storage.delete(old_name)
-        except Exception:
-            pass
+        if old_name != new_name:
+            try:
+                default_storage.delete(old_name)
+            except Exception:
+                logger.exception('postino: could not delete original image %s', old_name)
 
         self.featured_image.name = new_name
         return True

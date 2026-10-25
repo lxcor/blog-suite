@@ -65,6 +65,9 @@ Then run `python manage.py migrate`.
 | `POSTINO_LLM_MODEL` | provider default | Model id, e.g. `'gpt-6-luna'` |
 | `POSTINO_LLM_API_KEY` | `''` | API key for the provider |
 | `POSTINO_LLM_REASONING_EFFORT` | `None` | OpenAI reasoning models only (e.g. `'medium'`). Sent instead of `temperature`, which those models reject |
+| `POSTINO_FEATURED_IMAGE_SIZE` | `(1200, 630)` | `(w, h)` to crop and resize uploaded featured images to; `None` disables processing entirely |
+| `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow format string for the output file (`'WEBP'`, `'JPEG'`, `'PNG'`) |
+| `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Compression quality passed to Pillow (1–95) |
 | `DOVE_FROM_EMAIL` | `DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL put in front of unsubscribe links |
 

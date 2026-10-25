@@ -68,6 +68,8 @@ Then run `python manage.py migrate`.
 | `POSTINO_FEATURED_IMAGE_SIZE` | `(1200, 630)` | `(w, h)` to crop and resize uploaded featured images to; `None` disables processing entirely |
 | `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow format string for the output file (`'WEBP'`, `'JPEG'`, `'PNG'`) |
 | `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Compression quality passed to Pillow (1–95) |
+| `POSTINO_SITEMAP_ENABLED` | `True` | Set to `False` to disable the `<mount>/sitemap.xml` route (useful when the consumer mounts its own sitemap at the root) |
+| `POSTINO_NOINDEX_AFTER_DAYS` | `None` | Posts older than this many days get `<meta name="robots" content="noindex, follow">` and an `X-Robots-Tag: noindex, follow` response header, and are excluded from sitemaps. `None` (default) disables the feature entirely — safe for evergreen content. |
 | `DOVE_FROM_EMAIL` | `DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL put in front of unsubscribe links |
 
@@ -85,6 +87,54 @@ Model labels and the default strings are in Brazilian Portuguese. Override the m
 | `generate_comments` | Generate sample reader comments |
 | `seed_languages` | Create the language records used by translations |
 | `send_campaign <id>` | (dove) Send a campaign to all active subscribers |
+
+### Image sitemap
+
+Postino ships an image sitemap using Google's `xmlns:image` extension. Wire it in your `urls.py`:
+
+```python
+from django.contrib.sitemaps.views import sitemap
+from postino.sitemaps import ImageSitemap
+
+urlpatterns += [
+    path('sitemap-images.xml', sitemap,
+         {'sitemaps': {'images': ImageSitemap},
+          'template_name': 'postino/sitemap_images.xml'},
+         name='sitemap-images'),
+]
+```
+
+Add `Sitemap: https://<host>/sitemap-images.xml` to your `robots.txt` once you have images.
+
+Featured images are automatically renamed to the post's slug on upload (e.g. `my-post-title.webp`), so every image URL is keyword-rich.
+
+To filter which posts appear (e.g. follow a 60-day rule), subclass and override `get_queryset`:
+
+```python
+class RecentImageSitemap(ImageSitemap):
+    def get_queryset(self):
+        cutoff = timezone.now() - timedelta(days=60)
+        return Post.objects.filter(status='published', published_date__gte=cutoff)
+```
+
+### Age-based noindex
+
+Set `POSTINO_NOINDEX_AFTER_DAYS = 60` to automatically noindex posts older than 60 days. When active:
+
+- The post detail view sets `X-Robots-Tag: noindex, follow` (works even when the consumer overrides the template).
+- Postino's stock `blog_post_detail.html` also emits `<meta name="robots" content="noindex, follow">`.
+- Both `PostSitemap` and `ImageSitemap` exclude noindexed posts (Google flags "noindex URL in sitemap" as an error).
+
+**Per-post escape hatch:** set `Post.keep_indexed = True` in the admin to keep a specific post indexed regardless of age. Useful for standout analytical posts.
+
+**Per-category override:** set `Category.noindex_after_days` in the admin to override the global setting for all posts in that category. A category with `noindex_after_days = None` follows the global setting.
+
+Example:
+
+```python
+POSTINO_NOINDEX_AFTER_DAYS = 60   # daily/weekly digests age out
+# Leave keep_indexed = True on flagship guides so they stay in the index
+```
 
 ## Run the sandbox
 

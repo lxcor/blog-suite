@@ -6,11 +6,15 @@ from .models import Category, Post, Tag
 
 class ImageSitemap(Sitemap):
     changefreq = 'weekly'
-    template_name = 'postino/sitemap_images.xml'
+
+    def get_queryset(self):
+        """Override to filter which posts appear in the image sitemap."""
+        return Post.objects.filter(status='published')
 
     def items(self):
         return (
-            Post.objects.filter(status='published')
+            self.get_queryset()
+            .indexable()
             .exclude(featured_image='')
             .filter(featured_image__isnull=False)
             .order_by('-published_date')
@@ -19,24 +23,30 @@ class ImageSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.updated_at
 
-    def _urls(self, page, protocol, domain):
-        urls = super()._urls(page, protocol, domain)
+    def get_urls(self, page=1, site=None, protocol=None):
+        urls = super().get_urls(page=page, site=site, protocol=protocol)
+        protocol_ = self.get_protocol(protocol)
+        domain = self.get_domain(site)
         for url_info in urls:
             post = url_info['item']
-            url_info['images'] = [{
-                'loc': f'{protocol}://{domain}{post.featured_image.url}',
-                'title': post.title,
-                'caption': post.excerpt,
-            }]
+            image_url = post.featured_image.url
+            if image_url.startswith(('http://', 'https://')):
+                loc = image_url
+            else:
+                loc = f'{protocol_}://{domain}{image_url}'
+            url_info['images'] = [{'loc': loc}]
         return urls
 
 
 class PostSitemap(Sitemap):
     changefreq = 'weekly'
-    priority = 0.8
 
     def items(self):
-        return Post.objects.filter(status='published').order_by('-published_date')
+        return (
+            Post.objects.filter(status='published')
+            .indexable()
+            .order_by('-published_date')
+        )
 
     def lastmod(self, obj):
         return obj.updated_at

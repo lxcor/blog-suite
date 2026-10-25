@@ -11,6 +11,7 @@
 {% block meta_keywords %}{{ post.tags.all|join:", " }}{% endblock %}
 
 {% block og_meta %}
+{% if post.is_noindexed %}<meta name="robots" content="noindex, follow">{% endif %}
 <meta property="og:title" content="{{ post.title }}">
 <meta property="og:description" content="{{ post.excerpt }}">
 <meta property="og:image" content="{{ post.featured_image_url }}">

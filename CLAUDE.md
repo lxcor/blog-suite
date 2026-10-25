@@ -80,6 +80,8 @@ These settings are consumed by postino/dove but are not in the sandbox settings 
 | `POSTINO_FEATURED_IMAGE_SIZE` | `(1200, 630)` | `(w, h)` to crop/resize uploaded featured images to; `None` disables processing entirely |
 | `POSTINO_FEATURED_IMAGE_FORMAT` | `'WEBP'` | Pillow output format (`'WEBP'`, `'JPEG'`, `'PNG'`) |
 | `POSTINO_FEATURED_IMAGE_QUALITY` | `85` | Pillow compression quality (1–95) |
+| `POSTINO_SITEMAP_ENABLED` | `True` | `False` removes the `<mount>/sitemap.xml` route from `postino/urls.py` |
+| `POSTINO_NOINDEX_AFTER_DAYS` | `None` | Posts older than N days get `X-Robots-Tag: noindex, follow` + meta tag and are removed from sitemaps; `None` disables entirely (safe default for evergreen content). Per-post override: `Post.keep_indexed = True`. Per-category override: `Category.noindex_after_days`. |
 | `DOVE_FROM_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL prepended to unsubscribe links |
 

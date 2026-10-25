@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 
@@ -13,8 +14,13 @@ _sitemaps = {
     'static': BlogStaticSitemap,
 }
 
-urlpatterns = [
-    path('sitemap.xml', sitemap, {'sitemaps': _sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+_sitemap_patterns = []
+if getattr(settings, 'POSTINO_SITEMAP_ENABLED', True):
+    _sitemap_patterns = [
+        path('sitemap.xml', sitemap, {'sitemaps': _sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    ]
+
+urlpatterns = _sitemap_patterns + [
     path('', views.BlogListView.as_view(), name='blog'),
     path('categoria/<slug:category_slug>/', views.BlogListView.as_view(), name='blog_category'),
     path('author/<slug:author_slug>/', views.BlogListView.as_view(), name='blog_author'),

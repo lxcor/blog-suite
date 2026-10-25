@@ -15,6 +15,12 @@ class BlogPostDetailView(DetailView):
             status='published'
         ).select_related('category', 'author').prefetch_related('tags', 'comments')
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if self.object.is_noindexed:
+            response['X-Robots-Tag'] = 'noindex, follow'
+        return response
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

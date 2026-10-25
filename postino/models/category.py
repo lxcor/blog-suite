@@ -15,6 +15,12 @@ class Category(models.Model):
     )
     description = models.TextField(blank=True, verbose_name=_("Description"))
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+    noindex_after_days = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Noindex after days"),
+        help_text=_("Override POSTINO_NOINDEX_AFTER_DAYS for this category. Leave blank to use the global setting."),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

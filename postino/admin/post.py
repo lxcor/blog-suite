@@ -5,7 +5,7 @@ from ..models import Post
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'language', 'category', 'author', 'status', 'is_featured', 'published_date', 'views', 'reading_time')
+    list_display = ('title', 'language', 'category', 'author', 'status', 'is_featured', 'keep_indexed', 'published_date', 'views', 'reading_time')
     list_filter = ('status', 'language', 'category', 'is_featured', 'published_date')
     search_fields = ('title', 'excerpt', 'content')
     prepopulated_fields = {'slug': ('title',)}
@@ -16,7 +16,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('title', 'slug', 'excerpt', 'content', 'featured_image')
         }),
         ('Classification', {
-            'fields': ('category', 'tags', 'is_featured', 'status')
+            'fields': ('category', 'tags', 'is_featured', 'keep_indexed', 'status')
         }),
         ('Author & Dates', {
             'fields': ('author', 'reading_time', 'published_date')

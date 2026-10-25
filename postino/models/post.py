@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
@@ -9,10 +10,48 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-logger = logging.getLogger(__name__)
-
 from .category import Category
 from .tag import Tag
+
+logger = logging.getLogger(__name__)
+
+
+class PostQuerySet(models.QuerySet):
+    def indexable(self):
+        """Return only posts that should be indexed by search engines.
+
+        Respects POSTINO_NOINDEX_AFTER_DAYS (global) and
+        Category.noindex_after_days (per-category override).
+        When the setting is unset, all published posts are returned unchanged.
+        """
+        days = getattr(settings, 'POSTINO_NOINDEX_AFTER_DAYS', None)
+        if days is None:
+            return self
+
+        from django.db.models import (
+            Case, DurationField, ExpressionWrapper, F, Q, Value, When,
+        )
+        from django.db.models.functions import Now
+
+        qs = self.annotate(
+            _effective_days=Case(
+                When(
+                    category__noindex_after_days__isnull=False,
+                    then=F('category__noindex_after_days'),
+                ),
+                default=Value(days),
+                output_field=models.PositiveIntegerField(),
+            )
+        ).annotate(
+            _cutoff=ExpressionWrapper(
+                Now() - ExpressionWrapper(
+                    F('_effective_days') * Value(timedelta(days=1)),
+                    output_field=DurationField(),
+                ),
+                output_field=models.DateTimeField(),
+            )
+        )
+        return qs.filter(Q(keep_indexed=True) | Q(published_date__gte=F('_cutoff')))
 
 
 class Post(models.Model):
@@ -58,6 +97,11 @@ class Post(models.Model):
     )
 
     is_featured = models.BooleanField(default=False, verbose_name=_("Featured"))
+    keep_indexed = models.BooleanField(
+        default=False,
+        verbose_name=_("Keep indexed"),
+        help_text=_("Always keep this post indexed, even if it exceeds the noindex age threshold."),
+    )
     status = models.CharField(
         max_length=20,
         choices=POST_STATUS,
@@ -92,6 +136,8 @@ class Post(models.Model):
     published_date = models.DateTimeField(null=True, blank=True, verbose_name=_("Publication Date"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = PostQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Blog Post")
@@ -209,6 +255,26 @@ class Post(models.Model):
     @property
     def is_published(self):
         return self.status == 'published' and self.published_date <= timezone.now()
+
+    @property
+    def is_noindexed(self):
+        """True when the post should carry a noindex directive.
+
+        Checks POSTINO_NOINDEX_AFTER_DAYS (global) and the category's own
+        noindex_after_days override. keep_indexed=True always wins.
+        """
+        if self.keep_indexed:
+            return False
+        days = getattr(settings, 'POSTINO_NOINDEX_AFTER_DAYS', None)
+        if days is None:
+            return False
+        if self.category_id:
+            cat_days = getattr(self.category, 'noindex_after_days', None)
+            if cat_days is not None:
+                days = cat_days
+        if not self.published_date:
+            return False
+        return (timezone.now() - self.published_date).days > days
 
     @property
     def featured_image_url(self):

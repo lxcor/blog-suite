@@ -25,7 +25,13 @@ tmux new-session -d -s "$SESSION" -c "$PROJECT_DIR" "claude --remote-control $SE
 for i in $(seq 1 30); do
     sleep 1
     if tmux capture-pane -t "$SESSION" -p 2>/dev/null | grep -q "Yes, I trust this folder"; then
-        tmux send-keys -t "$SESSION" "" Enter
+        # Newer Claude Code versions default the cursor to "No, exit" -- move to
+        # "Yes" before confirming, or Enter quits the session.
+        if ! tmux capture-pane -t "$SESSION" -p | grep -q "❯ Yes, I trust this folder"; then
+            tmux send-keys -t "$SESSION" Down
+            sleep 0.5
+        fi
+        tmux send-keys -t "$SESSION" Enter
         break
     fi
 done

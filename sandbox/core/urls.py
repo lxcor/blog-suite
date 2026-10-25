@@ -2,8 +2,20 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 from django.views.generic import RedirectView
+
+from postino.sitemaps import (
+    BlogStaticSitemap, CategorySitemap, ImageSitemap, PostSitemap, TagSitemap,
+)
+
+sitemaps = {
+    'posts': PostSitemap,
+    'categories': CategorySitemap,
+    'tags': TagSitemap,
+    'static': BlogStaticSitemap,
+}
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
@@ -11,4 +23,9 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/blog/', permanent=False)),
     path('blog/', include('postino.urls')),
     path('newsletter/', include('dove.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('sitemap-images.xml', sitemap, {
+        'sitemaps': {'images': ImageSitemap},
+        'template_name': 'postino/sitemap_images.xml',
+    }, name='sitemap-images'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

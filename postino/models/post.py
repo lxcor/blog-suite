@@ -186,7 +186,8 @@ class Post(models.Model):
             self.featured_image.close()
 
         old_name = self.featured_image.name
-        stem = os.path.splitext(old_name)[0]
+        directory = os.path.dirname(old_name)
+        stem = f"{directory}/{self.slug}" if directory else self.slug
         new_name = default_storage.save(f"{stem}{ext}", ContentFile(buf.read()))
 
         if old_name != new_name:

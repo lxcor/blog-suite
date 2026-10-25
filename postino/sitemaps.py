@@ -4,6 +4,33 @@ from django.urls import reverse
 from .models import Category, Post, Tag
 
 
+class ImageSitemap(Sitemap):
+    changefreq = 'weekly'
+    template_name = 'postino/sitemap_images.xml'
+
+    def items(self):
+        return (
+            Post.objects.filter(status='published')
+            .exclude(featured_image='')
+            .filter(featured_image__isnull=False)
+            .order_by('-published_date')
+        )
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def _urls(self, page, protocol, domain):
+        urls = super()._urls(page, protocol, domain)
+        for url_info in urls:
+            post = url_info['item']
+            url_info['images'] = [{
+                'loc': f'{protocol}://{domain}{post.featured_image.url}',
+                'title': post.title,
+                'caption': post.excerpt,
+            }]
+        return urls
+
+
 class PostSitemap(Sitemap):
     changefreq = 'weekly'
     priority = 0.8

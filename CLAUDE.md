@@ -90,6 +90,7 @@ These settings are consumed by postino/dove but are not in the sandbox settings 
 | `POSTINO_BASE_TEMPLATE` | `'base.html'` | Base template extended by postino templates (injected via context processor `postino.contextprocessors`) |
 | `POSTINO_ADMIN_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Recipient for new-comment notifications |
 | `POSTINO_REDIRECT_URL` | `'/'` | Redirect target after newsletter subscription |
+| `POSTINO_LLM_REASONING_EFFORT` | `None` | OpenAI reasoning models only (e.g. `'medium'` for `gpt-6-luna`): sent as `reasoning_effort` in place of `temperature=0`, which those models reject |
 | `DOVE_FROM_EMAIL` | `settings.DEFAULT_FROM_EMAIL` | Sender address for campaigns |
 | `DOVE_SITE_URL` | `''` | Base URL prepended to unsubscribe links |
 

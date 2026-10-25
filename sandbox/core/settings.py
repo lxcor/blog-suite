@@ -91,6 +91,8 @@ import os
 POSTINO_LLM_PROVIDER = os.environ.get('POSTINO_LLM_PROVIDER', 'openai')
 POSTINO_LLM_MODEL = os.environ.get('POSTINO_LLM_MODEL', 'gpt-4o-mini')
 POSTINO_LLM_API_KEY = os.environ.get('POSTINO_LLM_API_KEY', '')
+# OpenAI reasoning models only (e.g. 'low' / 'medium'); replaces temperature when set
+POSTINO_LLM_REASONING_EFFORT = os.environ.get('POSTINO_LLM_REASONING_EFFORT') or None
 
 SESSION_COOKIE_NAME = 'sessionid_blog'
 

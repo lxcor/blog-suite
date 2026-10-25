@@ -38,13 +38,20 @@ class OpenAIClient(BaseLLMClient):
             raise ImportError("openai package is required. Run: pip install openai")
         self._openai = openai
         self._model = getattr(settings, 'POSTINO_LLM_MODEL', 'gpt-4o-mini')
+        # Reasoning models (e.g. gpt-6-luna) reject any non-default temperature,
+        # so when an effort level is configured we send that instead.
+        self._reasoning_effort = getattr(settings, 'POSTINO_LLM_REASONING_EFFORT', None)
         api_key = getattr(settings, 'POSTINO_LLM_API_KEY', '')
         self._client = openai.OpenAI(api_key=api_key)
 
     def _chat(self, system: str, user: str) -> str:
+        if self._reasoning_effort:
+            sampling = {'reasoning_effort': self._reasoning_effort}
+        else:
+            sampling = {'temperature': 0}
         response = self._client.chat.completions.create(
             model=self._model,
-            temperature=0,
+            **sampling,
             messages=[
                 {'role': 'system', 'content': system},
                 {'role': 'user', 'content': user},

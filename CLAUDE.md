@@ -23,7 +23,7 @@ source activate.sh
 ```
 Django is pinned to 4.2 LTS to match the apps that consume postino (belluaire-web, agrogato-web).
 
-**Settings** come from the git-ignored repo-root `.env` (read by `sandbox/core/settings.py`): `DJANGO_DEBUG` (default off), `DJANGO_SECRET_KEY` (required when debug is off), `DJANGO_ALLOWED_HOSTS`, `DJANGO_DB_NAME`/`_USER`/`_PASSWORD`/`_HOST`/`_PORT` (Postgres; defaults match the Sophia dev DB `blogsuite`, production DB is `blog_suite_web`, registered to the Virtualmin domain so the nightly backup covers it), optional `DJANGO_EMAIL_*`, and the `POSTINO_LLM_*` keys. Never commit `.env`.
+**Settings** come from the git-ignored repo-root `.env` (read by `sandbox/core/settings.py`): `DJANGO_DEBUG` (default off), `DJANGO_SECRET_KEY` (required when debug is off), `DJANGO_ALLOWED_HOSTS`, `DJANGO_DB_NAME`/`_USER`/`_PASSWORD`/`_HOST`/`_PORT` (SQLite by default so a fresh clone needs no setup; Postgres when `DJANGO_DB_NAME` is set — production DB is `blog_suite_web`, registered to the Virtualmin domain so the nightly backup covers it), optional `DJANGO_EMAIL_*`, and the `POSTINO_LLM_*` keys. Never commit `.env`.
 
 **Manage commands** (run from `sandbox/`):
 ```bash

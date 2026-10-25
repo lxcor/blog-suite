@@ -76,17 +76,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Defaults match the Sophia dev database; production overrides via .env
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'blogsuite'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'blogsuite'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'blogsuite'),
-        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+# SQLite by default so a fresh clone runs with zero setup; Postgres when
+# DJANGO_DB_NAME is set (e.g. the live site via .env)
+if os.environ.get('DJANGO_DB_NAME'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DJANGO_DB_NAME'],
+            'USER': os.environ.get('DJANGO_DB_USER', ''),
+            'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+            'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'America/Vancouver'

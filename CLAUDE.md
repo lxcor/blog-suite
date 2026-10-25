@@ -12,17 +12,7 @@ This is a monorepo containing two installable Django apps that together form a b
 
 ## Quick start (fresh clone)
 
-```bash
-git clone https://github.com/lxcor/blog-suite.git && cd blog-suite
-cp .env.example .env            # sets DJANGO_DEBUG=1 → SQLite, console email
-python3 -m venv venv && venv/bin/pip install -r sandbox/requirements.txt
-cd sandbox
-../venv/bin/python manage.py migrate
-../venv/bin/python manage.py createsuperuser   # must come first: the fixture's posts belong to user id 1
-../venv/bin/python manage.py loaddata initial_data
-../venv/bin/python manage.py runserver
-```
-Without `.env` (or `DJANGO_DEBUG=1`), settings refuse to start, because debug is off by default and production needs a real `DJANGO_SECRET_KEY`. This is deliberate: the live site fails closed if its `.env` goes missing.
+See **README.md → Run the sandbox** (single source, so the steps don't drift). Debug is off by default on purpose: without `.env` / `DJANGO_DEBUG=1` the settings refuse to start, so the live site fails closed if its `.env` goes missing.
 
 ## Setup and commands
 
